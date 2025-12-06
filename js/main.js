@@ -1,5 +1,23 @@
 // WhatsApp Medic Scheduler - Documentation JS
 
+// Highlight active navbar link based on current page
+function setActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-links a');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href');
+        
+        // Check if link matches current page
+        if (href === currentPage || 
+            (currentPage === '' && href === 'index.html') ||
+            (currentPage === '/' && href === 'index.html')) {
+            link.classList.add('active');
+        }
+    });
+}
+
 // Copy code to clipboard
 function copyCode(button) {
     const codeBlock = button.closest('.code-block');
@@ -21,6 +39,8 @@ function copyCode(button) {
 
 // Smooth scroll for anchor links
 document.addEventListener('DOMContentLoaded', () => {
+    // Set active nav link on page load
+    setActiveNavLink();
     // Add smooth scroll to all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {

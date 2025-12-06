@@ -115,12 +115,20 @@ a:hover {
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-md);
     transition: all 0.2s;
+    position: relative;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
+.nav-links a:hover {
     color: var(--text-primary);
     background: var(--bg-hover);
+}
+
+.nav-links a.active {
+    color: var(--primary);
+    font-weight: 600;
+    background: rgba(37, 211, 102, 0.1);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: calc(var(--spacing-sm) - 2px);
 }
 
 /* Hero Section */
