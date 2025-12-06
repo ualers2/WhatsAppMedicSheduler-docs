@@ -8,10 +8,69 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Runbook specific styles */
+        .runbook-layout {
+            display: flex;
+            padding-top: 80px;
+        }
+        .sidebar {
+            width: 280px;
+            height: calc(100vh - 80px);
+            position: fixed;
+            left: 0;
+            top: 80px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 1.5rem 0;
+            z-index: 100;
+        }
+        .sidebar-header {
+            padding: 0 1.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+        .sidebar-header h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-menu li a:hover {
+            background: var(--bg-hover);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        .sidebar-menu li a.active {
+            background: rgba(37, 211, 102, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 500;
+        }
+        .sidebar-menu li a i {
+            width: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
         .runbook-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 120px 2rem 2rem;
+            flex: 1;
+            margin-left: 280px;
+            max-width: calc(100% - 280px);
+            padding: 2rem 3rem;
         }
         .runbook-header {
             text-align: center;
@@ -29,33 +88,22 @@
             color: var(--text-secondary);
             font-size: 1.2rem;
         }
-        .toc {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid var(--border-color);
-        }
-        .toc h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-        .toc ul {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 0.5rem;
-            list-style: none;
-        }
-        .toc a {
-            color: var(--text-secondary);
-            padding: 0.5rem;
-            display: block;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s;
-        }
-        .toc a:hover {
-            color: var(--primary);
-            background: var(--bg-hover);
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+            color: #000;
+            font-size: 1.5rem;
         }
         .section {
             margin-bottom: 3rem;
@@ -250,8 +298,24 @@
             border-top: 1px solid var(--border-color);
             margin-top: 3rem;
         }
-        @media (max-width: 768px) {
-            .toc ul { grid-template-columns: 1fr; }
+        @media (max-width: 968px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .runbook-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 2rem 1.5rem;
+            }
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
             .architecture-diagram { font-size: 0.6rem; }
         }
@@ -274,30 +338,38 @@
         </ul>
     </nav>
 
-    <div class="runbook-content">
-        <div class="runbook-header">
-            <h1><i class="fas fa-book"></i> Runbook</h1>
-            <p>Guia Completo de Instalação, Configuração e Operação do WhatsApp Medic Scheduler</p>
-        </div>
-
-        <!-- Índice -->
-        <div class="toc">
-            <h3><i class="fas fa-list"></i> Índice</h3>
-            <ul>
-                <li><a href="#prerequisitos">1. Pré-requisitos</a></li>
-                <li><a href="#arquitetura">2. Arquitetura do Sistema</a></li>
-                <li><a href="#instalacao">3. Instalação</a></li>
-                <li><a href="#configuracao">4. Configuração</a></li>
-                <li><a href="#docker">5. Deploy com Docker</a></li>
-                <li><a href="#servicos">6. Serviços e Portas</a></li>
-                <li><a href="#databases">7. Bancos de Dados</a></li>
-                <li><a href="#variaveis">8. Variáveis de Ambiente</a></li>
-                <li><a href="#healthcheck">9. Health Checks</a></li>
-                <li><a href="#troubleshooting">10. Troubleshooting</a></li>
-                <li><a href="#operacoes">11. Operações Comuns</a></li>
-                <li><a href="#monitoramento">12. Monitoramento</a></li>
+    <div class="runbook-layout">
+        <!-- Sidebar Menu -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-book"></i> Menu do Runbook</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#prerequisitos"><i class="fas fa-clipboard-check"></i> Pré-requisitos</a></li>
+                <li><a href="#arquitetura"><i class="fas fa-sitemap"></i> Arquitetura</a></li>
+                <li><a href="#instalacao"><i class="fas fa-download"></i> Instalação</a></li>
+                <li><a href="#configuracao"><i class="fas fa-cog"></i> Configuração</a></li>
+                <li><a href="#docker"><i class="fab fa-docker"></i> Deploy Docker</a></li>
+                <li><a href="#servicos"><i class="fas fa-server"></i> Serviços e Portas</a></li>
+                <li><a href="#databases"><i class="fas fa-database"></i> Bancos de Dados</a></li>
+                <li><a href="#variaveis"><i class="fas fa-key"></i> Variáveis Ambiente</a></li>
+                <li><a href="#healthcheck"><i class="fas fa-heartbeat"></i> Health Checks</a></li>
+                <li><a href="#troubleshooting"><i class="fas fa-bug"></i> Troubleshooting</a></li>
+                <li><a href="#operacoes"><i class="fas fa-tools"></i> Operações Comuns</a></li>
+                <li><a href="#monitoramento"><i class="fas fa-chart-line"></i> Monitoramento</a></li>
             </ul>
-        </div>
+        </aside>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <main class="runbook-content">
+            <div class="runbook-header">
+                <h1><i class="fas fa-book"></i> Runbook</h1>
+                <p>Guia Completo de Instalação, Configuração e Operação do WhatsApp Medic Scheduler</p>
+            </div>
 
         <!-- 1. Pré-requisitos -->
         <section id="prerequisitos" class="section">
@@ -1187,9 +1259,54 @@ ADMIN_EMAIL_LIST=admin@exemplo.com,dev@exemplo.com</code></div>
             <p><i class="fas fa-book"></i> Runbook - WhatsApp Medic Scheduler v2.0</p>
             <p>Última atualização: Dezembro 2025</p>
         </footer>
+        </main>
     </div>
 
     <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Close sidebar when clicking a link (mobile)
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 968) {
+                    sidebar.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                }
+            });
+        });
+
+        // Highlight active section on scroll
+        const sections = document.querySelectorAll('section[id]');
+        const menuLinks = document.querySelectorAll('.sidebar-menu a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 150;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            menuLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
