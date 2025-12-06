@@ -722,38 +722,74 @@ REDIS_URL=redis://redis_medicsheduler:6379/0</code></div>
             </table>
 
             <h3>5.2 Comandos Docker Essenciais</h3>
-            <div class="code-block"><code># Build todas as imagens
-docker compose build
+            
+            <div class="card">
+                <h4><i class="fas fa-hammer"></i> Build</h4>
+                <table>
+                    <tr>
+                        <td>Build todas as imagens</td>
+                        <td><code class="inline-code">docker compose build</code></td>
+                    </tr>
+                    <tr>
+                        <td>Build com cache limpo</td>
+                        <td><code class="inline-code">docker compose build --no-cache</code></td>
+                    </tr>
+                </table>
+            </div>
 
-# Build com cache limpo
-docker compose build --no-cache
+            <div class="card">
+                <h4><i class="fas fa-play"></i> Iniciar / Parar</h4>
+                <table>
+                    <tr>
+                        <td>Subir todos os serviços</td>
+                        <td><code class="inline-code">docker compose up -d</code></td>
+                    </tr>
+                    <tr>
+                        <td>Subir serviço específico</td>
+                        <td><code class="inline-code">docker compose up -d api_medicsheduler</code></td>
+                    </tr>
+                    <tr>
+                        <td>Parar todos os serviços</td>
+                        <td><code class="inline-code">docker compose down</code></td>
+                    </tr>
+                    <tr>
+                        <td>Parar e remover volumes</td>
+                        <td><code class="inline-code">docker compose down -v</code></td>
+                    </tr>
+                    <tr>
+                        <td>Reiniciar serviço</td>
+                        <td><code class="inline-code">docker compose restart api_medicsheduler</code></td>
+                    </tr>
+                </table>
+            </div>
 
-# Subir todos os serviços
-docker compose up -d
+            <div class="card">
+                <h4><i class="fas fa-file-alt"></i> Logs</h4>
+                <table>
+                    <tr>
+                        <td>Ver logs de todos os serviços</td>
+                        <td><code class="inline-code">docker compose logs -f</code></td>
+                    </tr>
+                    <tr>
+                        <td>Ver logs de serviço específico</td>
+                        <td><code class="inline-code">docker compose logs -f api_medicsheduler</code></td>
+                    </tr>
+                </table>
+            </div>
 
-# Subir serviço específico
-docker compose up -d api_medicsheduler
-
-# Parar todos os serviços
-docker compose down
-
-# Parar e remover volumes
-docker compose down -v
-
-# Ver logs de todos os serviços
-docker compose logs -f
-
-# Ver logs de serviço específico
-docker compose logs -f api_medicsheduler
-
-# Reiniciar serviço
-docker compose restart api_medicsheduler
-
-# Executar comando dentro do container
-docker compose exec api_medicsheduler python --version
-
-# Acessar shell do container
-docker compose exec api_medicsheduler bash</code></div>
+            <div class="card">
+                <h4><i class="fas fa-terminal"></i> Execução</h4>
+                <table>
+                    <tr>
+                        <td>Executar comando no container</td>
+                        <td><code class="inline-code">docker compose exec api_medicsheduler python --version</code></td>
+                    </tr>
+                    <tr>
+                        <td>Acessar shell do container</td>
+                        <td><code class="inline-code">docker compose exec api_medicsheduler bash</code></td>
+                    </tr>
+                </table>
+            </div>
 
             <h3>5.3 Limites de Recursos</h3>
             <table>
@@ -871,14 +907,20 @@ docker compose exec api_medicsheduler bash</code></div>
             <h3>7.1 PostgreSQL</h3>
             <div class="card">
                 <h4>Conexão</h4>
-                <div class="code-block"><code># Via docker
-docker compose exec postgres_medicsheduler psql -U postgres -d meubanco
-
-# Via cliente local
-psql -h localhost -p 5122 -U postgres -d meubanco
-
-# String de conexão
-postgresql://postgres:postgres@localhost:5122/meubanco</code></div>
+                <table>
+                    <tr>
+                        <td><strong>Via Docker</strong></td>
+                        <td><code class="inline-code">docker compose exec postgres_medicsheduler psql -U postgres -d meubanco</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Via cliente local</strong></td>
+                        <td><code class="inline-code">psql -h localhost -p 5122 -U postgres -d meubanco</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>String de conexão</strong></td>
+                        <td><code class="inline-code">postgresql://postgres:postgres@localhost:5122/meubanco</code></td>
+                    </tr>
+                </table>
 
                 <h4>Credenciais Padrão</h4>
                 <table>
@@ -893,11 +935,16 @@ postgresql://postgres:postgres@localhost:5122/meubanco</code></div>
             <h3>7.2 MongoDB</h3>
             <div class="card">
                 <h4>Conexão</h4>
-                <div class="code-block"><code># Via docker
-docker compose exec mongodb_medicsheduler mongosh -u root -p rootpassword
-
-# String de conexão
-mongodb://root:rootpassword@localhost:29017/audit_and_logs?authSource=admin</code></div>
+                <table>
+                    <tr>
+                        <td><strong>Via Docker</strong></td>
+                        <td><code class="inline-code">docker compose exec mongodb_medicsheduler mongosh -u root -p rootpassword</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>String de conexão</strong></td>
+                        <td><code class="inline-code">mongodb://root:rootpassword@localhost:29017/audit_and_logs?authSource=admin</code></td>
+                    </tr>
+                </table>
 
                 <h4>Collections Principais</h4>
                 <ul>
@@ -910,14 +957,20 @@ mongodb://root:rootpassword@localhost:29017/audit_and_logs?authSource=admin</cod
             <h3>7.3 Redis</h3>
             <div class="card">
                 <h4>Conexão</h4>
-                <div class="code-block"><code># Via docker
-docker compose exec redis_medicsheduler redis-cli
-
-# Via cliente local
-redis-cli -h localhost -p 6319
-
-# String de conexão
-redis://localhost:6319/0</code></div>
+                <table>
+                    <tr>
+                        <td><strong>Via Docker</strong></td>
+                        <td><code class="inline-code">docker compose exec redis_medicsheduler redis-cli</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Via cliente local</strong></td>
+                        <td><code class="inline-code">redis-cli -h localhost -p 6319</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>String de conexão</strong></td>
+                        <td><code class="inline-code">redis://localhost:6319/0</code></td>
+                    </tr>
+                </table>
 
                 <h4>Uso Principal</h4>
                 <ul>
@@ -1187,32 +1240,62 @@ docker compose exec api_medicsheduler python migrations/rebuild_mock_database.py
 
             <h3>Logs</h3>
             <div class="card">
-                <div class="code-block"><code># Logs em tempo real de todos os serviços
-docker compose logs -f
-
-# Logs de serviço específico
-docker compose logs -f api_medicsheduler
-
-# Últimas 100 linhas
-docker compose logs --tail 100 api_medicsheduler
-
-# Logs com timestamp
-docker compose logs -f -t api_medicsheduler
-
-# Logs salvos em arquivo (volumes)
-ls -la backend/logs/</code></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Comando</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Logs em tempo real (todos)</td>
+                            <td><code class="inline-code">docker compose logs -f</code></td>
+                        </tr>
+                        <tr>
+                            <td>Logs de serviço específico</td>
+                            <td><code class="inline-code">docker compose logs -f api_medicsheduler</code></td>
+                        </tr>
+                        <tr>
+                            <td>Últimas 100 linhas</td>
+                            <td><code class="inline-code">docker compose logs --tail 100 api_medicsheduler</code></td>
+                        </tr>
+                        <tr>
+                            <td>Logs com timestamp</td>
+                            <td><code class="inline-code">docker compose logs -f -t api_medicsheduler</code></td>
+                        </tr>
+                        <tr>
+                            <td>Logs salvos (volumes)</td>
+                            <td><code class="inline-code">ls -la backend/logs/</code></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <h3>Métricas de Container</h3>
             <div class="card">
-                <div class="code-block"><code># CPU, memória, rede em tempo real
-docker stats
-
-# Apenas serviços específicos
-docker stats api_medicsheduler webhooks_medicsheduler net_mock_api_gateway
-
-# Sem streaming (snapshot)
-docker stats --no-stream</code></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Comando</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CPU, memória, rede (tempo real)</td>
+                            <td><code class="inline-code">docker stats</code></td>
+                        </tr>
+                        <tr>
+                            <td>Apenas serviços específicos</td>
+                            <td><code class="inline-code">docker stats api_medicsheduler webhooks_medicsheduler</code></td>
+                        </tr>
+                        <tr>
+                            <td>Snapshot (sem streaming)</td>
+                            <td><code class="inline-code">docker stats --no-stream</code></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <h3>AgentOps (Monitoramento de Agente IA)</h3>
