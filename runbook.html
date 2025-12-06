@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runbook - WhatsApp Medic Scheduler</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        nav {
+            background: var(--surface);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--surface-light);
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: var(--primary); }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: var(--secondary);
+            border-bottom: 2px solid var(--surface-light);
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--primary);
+        }
+        h4 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+            color: var(--text);
+        }
+        .toc {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .toc h3 {
+            margin-top: 0;
+        }
+        .toc ul {
+            columns: 2;
+            column-gap: 2rem;
+        }
+        .toc li {
+            margin: 0.5rem 0;
+        }
+        .toc a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .toc a:hover {
+            color: var(--primary);
+        }
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        pre {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--surface-light);
+        }
+        code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: #7dd3fc;
+        }
+        .inline-code {
+            background: var(--surface-light);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--surface-light);
+        }
+        th {
+            background: var(--surface-light);
+            font-weight: 600;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .badge-primary { background: var(--primary); color: white; }
+        .badge-secondary { background: var(--secondary); color: white; }
+        .badge-warning { background: var(--warning); color: black; }
+        .badge-danger { background: var(--danger); color: white; }
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--secondary);
+        }
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+        }
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--primary);
+        }
+        .service-card {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+        .service-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .service-port {
+            font-family: monospace;
+            color: var(--warning);
+        }
+        .architecture-diagram {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #7dd3fc;
+        }
+        .env-var {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--surface-light);
+        }
+        .env-key {
+            font-family: monospace;
+            color: var(--primary);
+        }
+        .env-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .checklist {
+            list-style: none;
+        }
+        .checklist li {
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+        .flow-step {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--secondary);
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--surface-light);
+            margin-top: 3rem;
+        }
+        @media (max-width: 768px) {
+            nav ul { flex-wrap: wrap; gap: 1rem; justify-content: center; }
+            .toc ul { columns: 1; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="api.html">API Reference</a></li>
+            <li><a href="agent.html">Agent IA</a></li>
+            <li><a href="mock-gateway.html">Mock Gateway</a></li>
+            <li><a href="runbook.html">Runbook</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>📘 Runbook</h1>
+        <p class="subtitle">Guia Completo de Instalação, Configuração e Operação do WhatsApp Medic Scheduler</p>
+
+        <!-- Índice -->
+        <div class="toc">
+            <h3>📋 Índice</h3>
+            <ul>
+                <li><a href="#prerequisitos">1. Pré-requisitos</a></li>
+                <li><a href="#arquitetura">2. Arquitetura do Sistema</a></li>
+                <li><a href="#instalacao">3. Instalação</a></li>
+                <li><a href="#configuracao">4. Configuração</a></li>
+                <li><a href="#docker">5. Deploy com Docker</a></li>
+                <li><a href="#servicos">6. Serviços e Portas</a></li>
+                <li><a href="#databases">7. Bancos de Dados</a></li>
+                <li><a href="#variaveis">8. Variáveis de Ambiente</a></li>
+                <li><a href="#healthcheck">9. Health Checks</a></li>
+                <li><a href="#troubleshooting">10. Troubleshooting</a></li>
+                <li><a href="#operacoes">11. Operações Comuns</a></li>
+                <li><a href="#monitoramento">12. Monitoramento</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. Pré-requisitos -->
+        <section id="prerequisitos">
+            <h2>1. Pré-requisitos</h2>
+            
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💻</div>
+                        <h3>Software Necessário</h3>
+                    </div>
+                    <ul class="checklist">
+                        <li><strong>Python 3.11+</strong> - Runtime principal</li>
+                        <li><strong>Docker 24+</strong> - Containerização</li>
+                        <li><strong>Docker Compose 2.x</strong> - Orquestração</li>
+                        <li><strong>Git</strong> - Controle de versão</li>
+                        <li><strong>curl</strong> - Testes de API</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔑</div>
+                        <h3>Credenciais Necessárias</h3>
+                    </div>
+                    <ul class="checklist">
+                        <li><strong>OpenAI API Key</strong> - Agente de IA</li>
+                        <li><strong>Vonage/Twilio</strong> - WhatsApp API</li>
+                        <li><strong>AgentOps Key</strong> - Monitoramento (opcional)</li>
+                        <li><strong>SMTP</strong> - Notificações por email</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Verificar Instalações</h3>
+            <pre><code># Python
+python --version
+# Esperado: Python 3.11.x
+
+# Docker
+docker --version
+# Esperado: Docker version 24.x.x
+
+# Docker Compose
+docker compose version
+# Esperado: Docker Compose version v2.x.x
+
+# Git
+git --version</code></pre>
+
+            <div class="alert alert-info">
+                <strong>💡 Dica:</strong> No Windows, recomendamos usar WSL2 com Docker Desktop para melhor performance.
+            </div>
+        </section>
+
+        <!-- 2. Arquitetura -->
+        <section id="arquitetura">
+            <h2>2. Arquitetura do Sistema</h2>
+
+            <div class="architecture-diagram">
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           WhatsApp Medic Scheduler                               │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│   ┌──────────────┐     ┌──────────────────────────────────────────────────┐     │
+│   │   WhatsApp   │     │                BACKEND (Flask/ASGI)              │     │
+│   │   (Vonage/   │────▶│  ┌─────────────────┐  ┌─────────────────────┐   │     │
+│   │   Twilio)    │     │  │  webhooks.py    │  │      api.py         │   │     │
+│   └──────────────┘     │  │  Port: 3004     │  │     Port: 3000      │   │     │
+│                        │  │                 │  │                     │   │     │
+│                        │  │  • /twilio      │  │  • /messages        │   │     │
+│                        │  │  • /vonage      │  │  • /agent           │   │     │
+│                        │  │                 │  │  • /fallback        │   │     │
+│                        │  └────────┬────────┘  │  • /rag             │   │     │
+│                        │           │           └──────────┬──────────┘   │     │
+│                        │           │                      │              │     │
+│                        │           └──────────┬───────────┘              │     │
+│                        │                      ▼                          │     │
+│                        │           ┌─────────────────────┐               │     │
+│                        │           │   Agent IA (GPT-4)  │               │     │
+│                        │           │   + Guardrails      │               │     │
+│                        │           │   + Tools           │               │     │
+│                        │           └─────────┬───────────┘               │     │
+│                        └─────────────────────┼───────────────────────────┘     │
+│                                              │                                  │
+│   ┌──────────────────────────────────────────┼──────────────────────────────┐  │
+│   │                        INFRAESTRUTURA    │                              │  │
+│   │                                          ▼                              │  │
+│   │  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐               │  │
+│   │  │  PostgreSQL   │  │    MongoDB    │  │     Redis     │               │  │
+│   │  │  Port: 5122   │  │  Port: 29017  │  │  Port: 6319   │               │  │
+│   │  │               │  │               │  │               │               │  │
+│   │  │  • Pacientes  │  │  • Auditoria  │  │  • Cache      │               │  │
+│   │  │  • Schedules  │  │  • Logs       │  │  • Dedup      │               │  │
+│   │  │  • Convênios  │  │  • Sessions   │  │  • Sessions   │               │  │
+│   │  └───────────────┘  └───────────────┘  └───────────────┘               │  │
+│   │                                                                         │  │
+│   │  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │  │
+│   │  │  Net Mock API Gateway       │  │       PgAdmin               │      │  │
+│   │  │  Port: 5001                 │  │      Port: 5050             │      │  │
+│   │  │  • Mock API Homologação     │  │  • Gerenciamento BD         │      │  │
+│   │  └─────────────────────────────┘  └─────────────────────────────┘      │  │
+│   └─────────────────────────────────────────────────────────────────────────┘  │
+│                                                                                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+            </div>
+
+            <h3>Componentes Principais</h3>
+            <div class="grid-3">
+                <div class="service-card">
+                    <div class="service-name">🌐 API Principal</div>
+                    <p>Flask + ASGI/Uvicorn</p>
+                    <p class="service-port">Port: 3000</p>
+                    <p>5 workers, 800MB RAM</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name">📨 Webhooks</div>
+                    <p>Flask + ASGI/Uvicorn</p>
+                    <p class="service-port">Port: 3004</p>
+                    <p>5 workers, 800MB RAM</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name">🏥 Mock Gateway</div>
+                    <p>Flask + Flasgger</p>
+                    <p class="service-port">Port: 5001</p>
+                    <p>Simula API NetPACS</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name">🐘 PostgreSQL</div>
+                    <p>Versão 15</p>
+                    <p class="service-port">Port: 5122</p>
+                    <p>Dados principais</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name">🍃 MongoDB</div>
+                    <p>Versão 7</p>
+                    <p class="service-port">Port: 29017</p>
+                    <p>Auditoria e logs</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name">🔴 Redis</div>
+                    <p>Versão 7 Alpine</p>
+                    <p class="service-port">Port: 6319</p>
+                    <p>Cache e dedup</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Instalação -->
+        <section id="instalacao">
+            <h2>3. Instalação</h2>
+
+            <h3>3.1 Instalação Rápida (Docker)</h3>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div>
+                    <h4>Clonar Repositório</h4>
+                    <pre><code>git clone https://github.com/ualers2/WhatsAppMedicSheduler.git
+cd WhatsAppMedicSheduler</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div>
+                    <h4>Configurar Variáveis de Ambiente</h4>
+                    <pre><code># Copiar template de variáveis
+cp project/master.env.example project/master.env
+
+# Editar com suas credenciais
+code project/master.env  # ou nano/vim</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div>
+                    <h4>Build da Imagem Base</h4>
+                    <pre><code># Construir imagem base com variáveis de ambiente
+cd project
+docker compose up --build -d
+cd ..</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div>
+                    <h4>Subir Todos os Serviços</h4>
+                    <pre><code># Na raiz do projeto
+docker compose up -d
+
+# Verificar status
+docker compose ps</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div>
+                    <h4>Inicializar Banco de Dados</h4>
+                    <pre><code># Executar migrações
+docker compose exec api_medicsheduler python migrations/run_all_migrations.py
+
+# Popular dados iniciais (mock)
+docker compose exec api_medicsheduler python migrations/init_mock_database.py</code></pre>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">6</div>
+                <div>
+                    <h4>Verificar Instalação</h4>
+                    <pre><code># Health check da API
+curl http://localhost:3000/rag/health
+
+# Health check Mock Gateway
+curl http://localhost:5001/health
+
+# Listar containers
+docker compose ps</code></pre>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>✅ Sucesso!</strong> Se todos os health checks retornarem status OK, o sistema está funcionando.
+            </div>
+
+            <h3>3.2 Instalação Local (Desenvolvimento)</h3>
+            <pre><code># Criar ambiente virtual
+python -m venv venv
+
+# Ativar ambiente
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
+
+# Instalar dependências do backend
+pip install -r backend/requirements.txt
+
+# Instalar dependências do Mock Gateway
+pip install -r net_mock_api_gateway/requirements.txt
+
+# Copiar variáveis de ambiente
+cp project/master.env backend/app/keys/master.env
+
+# Subir apenas infraestrutura (PostgreSQL, MongoDB, Redis)
+docker compose up -d postgres_medicsheduler mongodb_medicsheduler redis_medicsheduler
+
+# Rodar API localmente
+cd backend
+python api.py</code></pre>
+        </section>
+
+        <!-- 4. Configuração -->
+        <section id="configuracao">
+            <h2>4. Configuração</h2>
+
+            <h3>4.1 Arquivo master.env</h3>
+            <p>O arquivo <code class="inline-code">project/master.env</code> centraliza todas as configurações:</p>
+
+            <div class="card">
+                <h4>🌐 URLs e Modo de API</h4>
+                <pre><code># Modo Mock (desenvolvimento)
+USE_MOCK_API=true
+URL_BASE=https://seu-dominio.rshare.io
+
+# URLs da API de Homologação (AnimatiPACS)
+ANIMATI_PACS_MOCK_URL=http://net_mock_api_gateway:5001/api-gateway
+ANIMATI_PACS_SANDBOX_URL=https://int.public.animatipacs.com.br/api-gateway
+ANIMATI_PACS_PRODUCTION_URL=https://ris.clinicasaojose.med.br/api-gateway</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>🔑 Credenciais de API</h4>
+                <pre><code># OpenAI (obrigatório)
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxx
+
+# AgentOps (monitoramento de agente)
+AGENTOPS_API_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
+# AnimatiPACS API Keys
+ANIMATI_PACS_MOCK_API_KEY=eyJhbGciOiJIUzI1NiIs...
+ANIMATI_PACS_SANDBOX_API_KEY=eyJhbGciOiJIUzI1NiJ9...
+ANIMATI_PACS_PRODUCTION_API_KEY=eyJhbGciOiJIUzI1NiJ9...</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>📱 WhatsApp (Vonage/Twilio)</h4>
+                <pre><code># Vonage
+VONAGE_API_KEY=xxxxxxxx
+VONAGE_API_SECRET=xxxxxxxxxxxx
+VONAGE_APPLICATION_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+VONAGE_APPLICATION_PRIVATE_KEY=C:\path\to\private.key
+VONAGE_SIGNATURE_SECRET=xxxxxxxxxxxxxxxxx
+VONAGE_NUMBER=14157386102
+VONAGE_URL=https://messages-sandbox.nexmo.com/v1/messages
+
+# Twilio
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_NUMBER=whatsapp:+14155238886
+TWILIO_FALLBACK_MODEL_MESSAGE=HXxxxxxxxxxxxxxxxxxxxx
+TWILIO_SYSTEM_OFF_MODEL_MESSAGE=HXxxxxxxxxxxxxxxxxxxxx</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>🗄️ Bancos de Dados</h4>
+                <pre><code># PostgreSQL
+DATABASE_URL=postgresql://postgres:postgres@postgres_medicsheduler:5432/meubanco
+
+# MongoDB
+MONGO_URI=mongodb://root:rootpassword@mongodb_medicsheduler:27017/audit_and_logs?authSource=admin
+MONGO_DB_NAME=audit_and_logs
+
+# Redis
+REDIS_URL=redis://redis_medicsheduler:6379/0</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>📧 Email (SMTP)</h4>
+                <pre><code>SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seu-email@gmail.com
+SMTP_PASSWORD=xxxx xxxx xxxx xxxx
+EMAIL_FROM=Alert Medic Scheduler
+ADMIN_EMAIL_LIST=admin@exemplo.com</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>⚙️ Configurações do Sistema</h4>
+                <pre><code># Limites de token
+MAX_TOKENS_LIMIT=300000
+TOKENS_LIMIT=100000
+
+# Intervalos de verificação (segundos)
+CHECK_INTERVAL_SECONDS=120
+
+# Segurança
+LOG_HASH_SECRET=WhatsApp-Medic-Sheduler-xxxxxxxx
+
+# Nome da rede de saúde
+NOME_DA_REDE_DE_SAUDE=clinicasaojose
+
+# Número do humano de suporte
+NUMERO_DO_HUMANO_DA_EQUIPE=31999999999</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Importante:</strong> Nunca commite o arquivo <code>master.env</code> com credenciais reais. Use <code>.gitignore</code> para protegê-lo.
+            </div>
+        </section>
+
+        <!-- 5. Docker -->
+        <section id="docker">
+            <h2>5. Deploy com Docker</h2>
+
+            <h3>5.1 Estrutura de Imagens</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Base</th>
+                        <th>Propósito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>mediacutstudio/whatsapp-medic-scheduler:v1.0</code></td>
+                        <td>python:3.11-slim</td>
+                        <td>Imagem base com master.env</td>
+                    </tr>
+                    <tr>
+                        <td><code>mediacutstudio/api-medicsheduler:v1.0</code></td>
+                        <td>Imagem base</td>
+                        <td>API Principal</td>
+                    </tr>
+                    <tr>
+                        <td><code>mediacutstudio/webhooks-medicsheduler:v1.0</code></td>
+                        <td>Imagem base</td>
+                        <td>Webhooks WhatsApp</td>
+                    </tr>
+                    <tr>
+                        <td><code>mediacutstudio/net-mock-api-gateway:v1.0</code></td>
+                        <td>Imagem base</td>
+                        <td>Mock API Gateway</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.2 Comandos Docker Essenciais</h3>
+            <pre><code># Build todas as imagens
+docker compose build
+
+# Build com cache limpo
+docker compose build --no-cache
+
+# Subir todos os serviços
+docker compose up -d
+
+# Subir serviço específico
+docker compose up -d api_medicsheduler
+
+# Parar todos os serviços
+docker compose down
+
+# Parar e remover volumes
+docker compose down -v
+
+# Ver logs de todos os serviços
+docker compose logs -f
+
+# Ver logs de serviço específico
+docker compose logs -f api_medicsheduler
+
+# Reiniciar serviço
+docker compose restart api_medicsheduler
+
+# Executar comando dentro do container
+docker compose exec api_medicsheduler python --version
+
+# Acessar shell do container
+docker compose exec api_medicsheduler bash</code></pre>
+
+            <h3>5.3 Limites de Recursos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Memória</th>
+                        <th>CPU</th>
+                        <th>Workers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>api_medicsheduler</td>
+                        <td>800MB</td>
+                        <td>1.25</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>webhooks_medicsheduler</td>
+                        <td>800MB</td>
+                        <td>0.80</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>net_mock_api_gateway</td>
+                        <td>800MB</td>
+                        <td>1.25</td>
+                        <td>1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 6. Serviços e Portas -->
+        <section id="servicos">
+            <h2>6. Serviços e Portas</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Porta Host</th>
+                        <th>Porta Container</th>
+                        <th>URL de Acesso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>API Principal</td>
+                        <td>3000</td>
+                        <td>3000</td>
+                        <td><code>http://localhost:3000</code></td>
+                    </tr>
+                    <tr>
+                        <td>Webhooks</td>
+                        <td>3004</td>
+                        <td>3004</td>
+                        <td><code>http://localhost:3004</code></td>
+                    </tr>
+                    <tr>
+                        <td>Mock API Gateway</td>
+                        <td>5001</td>
+                        <td>5001</td>
+                        <td><code>http://localhost:5001</code></td>
+                    </tr>
+                    <tr>
+                        <td>PostgreSQL</td>
+                        <td>5122</td>
+                        <td>5432</td>
+                        <td><code>localhost:5122</code></td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB</td>
+                        <td>29017</td>
+                        <td>27017</td>
+                        <td><code>localhost:29017</code></td>
+                    </tr>
+                    <tr>
+                        <td>Redis</td>
+                        <td>6319</td>
+                        <td>6379</td>
+                        <td><code>localhost:6319</code></td>
+                    </tr>
+                    <tr>
+                        <td>PgAdmin</td>
+                        <td>5050</td>
+                        <td>80</td>
+                        <td><code>http://localhost:5050</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>URLs Swagger (Documentação Interativa)</h3>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>API Principal</h4>
+                    <p><a href="http://localhost:3000/apidocs" target="_blank">http://localhost:3000/apidocs</a></p>
+                </div>
+                <div class="card">
+                    <h4>Webhooks</h4>
+                    <p><a href="http://localhost:3004/apidocs" target="_blank">http://localhost:3004/apidocs</a></p>
+                </div>
+                <div class="card">
+                    <h4>Mock Gateway</h4>
+                    <p><a href="http://localhost:5001/apidocs" target="_blank">http://localhost:5001/apidocs</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Bancos de Dados -->
+        <section id="databases">
+            <h2>7. Bancos de Dados</h2>
+
+            <h3>7.1 PostgreSQL</h3>
+            <div class="card">
+                <h4>Conexão</h4>
+                <pre><code># Via docker
+docker compose exec postgres_medicsheduler psql -U postgres -d meubanco
+
+# Via cliente local
+psql -h localhost -p 5122 -U postgres -d meubanco
+
+# String de conexão
+postgresql://postgres:postgres@localhost:5122/meubanco</code></pre>
+
+                <h4>Credenciais Padrão</h4>
+                <table>
+                    <tr><td>Host</td><td>localhost</td></tr>
+                    <tr><td>Porta</td><td>5122</td></tr>
+                    <tr><td>Database</td><td>meubanco</td></tr>
+                    <tr><td>Usuário</td><td>postgres</td></tr>
+                    <tr><td>Senha</td><td>postgres</td></tr>
+                </table>
+            </div>
+
+            <h3>7.2 MongoDB</h3>
+            <div class="card">
+                <h4>Conexão</h4>
+                <pre><code># Via docker
+docker compose exec mongodb_medicsheduler mongosh -u root -p rootpassword
+
+# String de conexão
+mongodb://root:rootpassword@localhost:29017/audit_and_logs?authSource=admin</code></pre>
+
+                <h4>Collections Principais</h4>
+                <ul>
+                    <li><code>audit_logs</code> - Logs de auditoria</li>
+                    <li><code>conversation_history</code> - Histórico de conversas</li>
+                    <li><code>agent_sessions</code> - Sessões do agente</li>
+                </ul>
+            </div>
+
+            <h3>7.3 Redis</h3>
+            <div class="card">
+                <h4>Conexão</h4>
+                <pre><code># Via docker
+docker compose exec redis_medicsheduler redis-cli
+
+# Via cliente local
+redis-cli -h localhost -p 6319
+
+# String de conexão
+redis://localhost:6319/0</code></pre>
+
+                <h4>Uso Principal</h4>
+                <ul>
+                    <li>Cache de sessões</li>
+                    <li>Deduplicação de mensagens (TTL 5 min)</li>
+                    <li>Filas de processamento</li>
+                </ul>
+            </div>
+
+            <h3>7.4 PgAdmin</h3>
+            <div class="card">
+                <p>Interface web para gerenciar PostgreSQL:</p>
+                <p><strong>URL:</strong> <a href="http://localhost:5050" target="_blank">http://localhost:5050</a></p>
+                <table>
+                    <tr><td>Email</td><td>admin@example.com</td></tr>
+                    <tr><td>Senha</td><td>pgadmin_medicsheduler_admin_key</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- 8. Variáveis de Ambiente -->
+        <section id="variaveis">
+            <h2>8. Variáveis de Ambiente</h2>
+
+            <h3>Referência Completa</h3>
+            <div class="card">
+                <h4>🔐 Autenticação</h4>
+                <div class="env-var">
+                    <span class="env-key">OPENAI_API_KEY</span>
+                    <span class="env-desc">Chave da API OpenAI (obrigatório)</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">AGENTOPS_API_KEY</span>
+                    <span class="env-desc">Chave AgentOps para monitoramento</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">ANIMATI_PACS_MOCK_API_KEY</span>
+                    <span class="env-desc">JWT para Mock API Gateway</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">ANIMATI_PACS_SANDBOX_API_KEY</span>
+                    <span class="env-desc">JWT para ambiente de homologação</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">ANIMATI_PACS_PRODUCTION_API_KEY</span>
+                    <span class="env-desc">JWT para ambiente de produção</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>📱 WhatsApp - Vonage</h4>
+                <div class="env-var">
+                    <span class="env-key">VONAGE_API_KEY</span>
+                    <span class="env-desc">API Key Vonage</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">VONAGE_API_SECRET</span>
+                    <span class="env-desc">API Secret Vonage</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">VONAGE_APPLICATION_ID</span>
+                    <span class="env-desc">ID da aplicação Vonage</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">VONAGE_APPLICATION_PRIVATE_KEY</span>
+                    <span class="env-desc">Caminho para chave privada</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">VONAGE_SIGNATURE_SECRET</span>
+                    <span class="env-desc">Secret para validação de assinatura</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">VONAGE_NUMBER</span>
+                    <span class="env-desc">Número WhatsApp Vonage</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>📱 WhatsApp - Twilio</h4>
+                <div class="env-var">
+                    <span class="env-key">TWILIO_ACCOUNT_SID</span>
+                    <span class="env-desc">Account SID Twilio</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">TWILIO_AUTH_TOKEN</span>
+                    <span class="env-desc">Auth Token Twilio</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">TWILIO_NUMBER</span>
+                    <span class="env-desc">Número WhatsApp Twilio (whatsapp:+...)</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">TWILIO_FALLBACK_MODEL_MESSAGE</span>
+                    <span class="env-desc">Template de fallback</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>🗄️ Infraestrutura</h4>
+                <div class="env-var">
+                    <span class="env-key">DATABASE_URL</span>
+                    <span class="env-desc">URL conexão PostgreSQL</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">MONGO_URI</span>
+                    <span class="env-desc">URL conexão MongoDB</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">MONGO_DB_NAME</span>
+                    <span class="env-desc">Nome do database MongoDB</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">REDIS_URL</span>
+                    <span class="env-desc">URL conexão Redis</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4>⚙️ Sistema</h4>
+                <div class="env-var">
+                    <span class="env-key">USE_MOCK_API</span>
+                    <span class="env-desc">true/false - Usar Mock ou Produção</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">URL_BASE</span>
+                    <span class="env-desc">URL base pública (webhook)</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">FLASK_ENV</span>
+                    <span class="env-desc">development/production</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">MAX_TOKENS_LIMIT</span>
+                    <span class="env-desc">Limite máximo de tokens (300000)</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">CHECK_INTERVAL_SECONDS</span>
+                    <span class="env-desc">Intervalo de checagem (120)</span>
+                </div>
+                <div class="env-var">
+                    <span class="env-key">LOG_HASH_SECRET</span>
+                    <span class="env-desc">Secret para hash de logs</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Health Checks -->
+        <section id="healthcheck">
+            <h2>9. Health Checks</h2>
+
+            <h3>Endpoints de Health</h3>
+            <pre><code># API Principal
+curl http://localhost:3000/rag/health
+# Esperado: {"status": "healthy", ...}
+
+# Webhooks
+curl http://localhost:3004/health
+# Esperado: {"status": "ok"}
+
+# Mock API Gateway  
+curl http://localhost:5001/health
+# Esperado: {"status": "healthy", "version": "3.98.2"}
+
+# PostgreSQL (via container)
+docker compose exec postgres_medicsheduler pg_isready -U postgres
+# Esperado: localhost:5432 - accepting connections
+
+# Redis
+docker compose exec redis_medicsheduler redis-cli ping
+# Esperado: PONG
+
+# MongoDB
+docker compose exec mongodb_medicsheduler mongosh --eval "db.adminCommand('ping')"
+# Esperado: { ok: 1 }</code></pre>
+
+            <h3>Script de Verificação Completa</h3>
+            <pre><code>#!/bin/bash
+echo "=== Health Check WhatsApp Medic Scheduler ==="
+
+echo -n "API Principal (3000): "
+curl -s http://localhost:3000/rag/health | jq -r '.status' 2>/dev/null || echo "FAIL"
+
+echo -n "Webhooks (3004): "
+curl -s http://localhost:3004/health | jq -r '.status' 2>/dev/null || echo "FAIL"
+
+echo -n "Mock Gateway (5001): "
+curl -s http://localhost:5001/health | jq -r '.status' 2>/dev/null || echo "FAIL"
+
+echo -n "PostgreSQL: "
+docker compose exec -T postgres_medicsheduler pg_isready -U postgres -q && echo "OK" || echo "FAIL"
+
+echo -n "Redis: "
+docker compose exec -T redis_medicsheduler redis-cli ping 2>/dev/null | grep -q PONG && echo "OK" || echo "FAIL"
+
+echo -n "MongoDB: "
+docker compose exec -T mongodb_medicsheduler mongosh --quiet --eval "db.adminCommand('ping').ok" 2>/dev/null | grep -q 1 && echo "OK" || echo "FAIL"
+
+echo "=== Verificação Concluída ==="</code></pre>
+        </section>
+
+        <!-- 10. Troubleshooting -->
+        <section id="troubleshooting">
+            <h2>10. Troubleshooting</h2>
+
+            <div class="card">
+                <h3>🔴 Container não inicia</h3>
+                <pre><code># Ver logs do container
+docker compose logs api_medicsheduler
+
+# Ver eventos do container
+docker events --filter container=api_medicsheduler
+
+# Verificar recursos
+docker stats --no-stream</code></pre>
+                <p><strong>Causas comuns:</strong></p>
+                <ul>
+                    <li>Porta já em uso</li>
+                    <li>Memória insuficiente</li>
+                    <li>Imagem base não encontrada</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>🔴 Erro de conexão com banco</h3>
+                <pre><code># Verificar se PostgreSQL está rodando
+docker compose ps postgres_medicsheduler
+
+# Testar conexão
+docker compose exec postgres_medicsheduler pg_isready -U postgres
+
+# Ver logs do PostgreSQL
+docker compose logs postgres_medicsheduler</code></pre>
+                <p><strong>Soluções:</strong></p>
+                <ul>
+                    <li>Verificar DATABASE_URL no master.env</li>
+                    <li>Confirmar que container PostgreSQL está healthy</li>
+                    <li>Verificar se rede Docker está correta</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>🔴 Variáveis de ambiente não carregam</h3>
+                <pre><code># Verificar se master.env existe na imagem base
+docker run --rm mediacutstudio/whatsapp-medic-scheduler:v1.0 cat /app/master.env
+
+# Rebuild da imagem base
+cd project
+docker compose build --no-cache
+docker compose up -d
+
+# Rebuild das imagens dependentes
+cd ..
+docker compose build --no-cache
+docker compose up -d</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>🔴 Erro de permissão no volume</h3>
+                <pre><code># Windows PowerShell
+icacls ".\backend\logs" /grant Everyone:F
+
+# Linux/Mac
+chmod -R 777 backend/logs
+
+# Ou usar volume nomeado no docker-compose
+volumes:
+  - logger_data:/app/logs</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>🔴 API retorna 500</h3>
+                <pre><code># Ver logs detalhados
+docker compose logs -f api_medicsheduler --tail 100
+
+# Acessar container e testar
+docker compose exec api_medicsheduler python -c "from app.util.config import load_env; print(load_env('OPENAI_API_KEY'))"
+
+# Verificar se Redis está acessível
+docker compose exec api_medicsheduler python -c "import redis; r=redis.from_url('redis://redis_medicsheduler:6379/0'); print(r.ping())"</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>🔴 Webhook não recebe mensagens</h3>
+                <p><strong>Checklist:</strong></p>
+                <ul class="checklist">
+                    <li>URL_BASE está configurado corretamente</li>
+                    <li>Webhook está registrado no Vonage/Twilio</li>
+                    <li>Porta 3004 está exposta publicamente (ngrok/rshare)</li>
+                    <li>VONAGE_SIGNATURE_SECRET está correto</li>
+                </ul>
+                <pre><code># Testar webhook localmente
+curl -X POST http://localhost:3004/webhooks/vonage \
+  -H "Content-Type: application/json" \
+  -d '{"from":"5531999999999","text":"teste"}'</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>🔴 Limpar tudo e recomeçar</h3>
+                <pre><code># Parar todos os containers
+docker compose down
+
+# Remover volumes (CUIDADO: apaga dados!)
+docker compose down -v
+
+# Remover imagens do projeto
+docker rmi $(docker images -q mediacutstudio/*)
+
+# Limpar cache Docker
+docker system prune -af
+
+# Reconstruir do zero
+docker compose build --no-cache
+docker compose up -d</code></pre>
+            </div>
+        </section>
+
+        <!-- 11. Operações Comuns -->
+        <section id="operacoes">
+            <h2>11. Operações Comuns</h2>
+
+            <h3>Backup e Restore</h3>
+            <div class="card">
+                <h4>Backup PostgreSQL</h4>
+                <pre><code># Backup completo
+docker compose exec postgres_medicsheduler pg_dump -U postgres meubanco > backup_$(date +%Y%m%d).sql
+
+# Backup compactado
+docker compose exec postgres_medicsheduler pg_dump -U postgres meubanco | gzip > backup_$(date +%Y%m%d).sql.gz
+
+# Restore
+cat backup.sql | docker compose exec -T postgres_medicsheduler psql -U postgres -d meubanco</code></pre>
+            </div>
+
+            <div class="card">
+                <h4>Backup MongoDB</h4>
+                <pre><code># Backup
+docker compose exec mongodb_medicsheduler mongodump -u root -p rootpassword --authenticationDatabase admin -d audit_and_logs --out /data/backup
+
+# Copiar para host
+docker cp mongodb_medicsheduler:/data/backup ./mongo_backup
+
+# Restore
+docker compose exec mongodb_medicsheduler mongorestore -u root -p rootpassword --authenticationDatabase admin /data/backup</code></pre>
+            </div>
+
+            <h3>Atualização do Sistema</h3>
+            <div class="card">
+                <pre><code># Pull das últimas mudanças
+git pull origin main
+
+# Rebuild das imagens
+docker compose build
+
+# Reiniciar serviços
+docker compose up -d
+
+# Executar migrações (se houver)
+docker compose exec api_medicsheduler python migrations/run_all_migrations.py</code></pre>
+            </div>
+
+            <h3>Escalar Workers</h3>
+            <div class="card">
+                <pre><code># Editar docker-compose.yml
+command: [
+  "uvicorn", "api:asgi_app",
+  "--host", "0.0.0.0",
+  "--port", "3000",
+  "--workers", "10",  # Aumentar workers
+  "--timeout-keep-alive", "3600"
+]
+
+# Aplicar mudanças
+docker compose up -d api_medicsheduler</code></pre>
+            </div>
+
+            <h3>Executar Migrations</h3>
+            <div class="card">
+                <pre><code># Executar todas as migrações
+docker compose exec api_medicsheduler python migrations/run_all_migrations.py
+
+# Migrações específicas
+docker compose exec api_medicsheduler python migrations/001_create_fallback_tables.py
+docker compose exec api_medicsheduler python migrations/002_populate_convenios.py
+docker compose exec api_medicsheduler python migrations/003_populate_plano_convenios.py
+
+# Recriar mock database
+docker compose exec api_medicsheduler python migrations/rebuild_mock_database.py</code></pre>
+            </div>
+        </section>
+
+        <!-- 12. Monitoramento -->
+        <section id="monitoramento">
+            <h2>12. Monitoramento</h2>
+
+            <h3>Logs</h3>
+            <div class="card">
+                <pre><code># Logs em tempo real de todos os serviços
+docker compose logs -f
+
+# Logs de serviço específico
+docker compose logs -f api_medicsheduler
+
+# Últimas 100 linhas
+docker compose logs --tail 100 api_medicsheduler
+
+# Logs com timestamp
+docker compose logs -f -t api_medicsheduler
+
+# Logs salvos em arquivo (volumes)
+ls -la backend/logs/</code></pre>
+            </div>
+
+            <h3>Métricas de Container</h3>
+            <div class="card">
+                <pre><code># CPU, memória, rede em tempo real
+docker stats
+
+# Apenas serviços específicos
+docker stats api_medicsheduler webhooks_medicsheduler net_mock_api_gateway
+
+# Sem streaming (snapshot)
+docker stats --no-stream</code></pre>
+            </div>
+
+            <h3>AgentOps (Monitoramento de Agente IA)</h3>
+            <div class="card">
+                <p>O sistema usa AgentOps para monitorar execuções do agente de IA.</p>
+                <p><strong>Dashboard:</strong> <a href="https://app.agentops.ai" target="_blank">https://app.agentops.ai</a></p>
+                <ul>
+                    <li>Rastreamento de sessões do agente</li>
+                    <li>Métricas de uso de tokens</li>
+                    <li>Análise de chamadas de tools</li>
+                    <li>Debugging de conversas</li>
+                </ul>
+            </div>
+
+            <h3>Swagger UI (Documentação de API)</h3>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>API Principal</h4>
+                    <p><a href="http://localhost:3000/apidocs" target="_blank">localhost:3000/apidocs</a></p>
+                </div>
+                <div class="card">
+                    <h4>Webhooks</h4>
+                    <p><a href="http://localhost:3004/apidocs" target="_blank">localhost:3004/apidocs</a></p>
+                </div>
+                <div class="card">
+                    <h4>Mock Gateway</h4>
+                    <p><a href="http://localhost:5001/apidocs" target="_blank">localhost:5001/apidocs</a></p>
+                </div>
+            </div>
+
+            <h3>Alertas por Email</h3>
+            <div class="card">
+                <p>O sistema envia alertas por email em caso de falhas críticas.</p>
+                <p>Configure no <code>master.env</code>:</p>
+                <pre><code>SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seu-email@gmail.com
+SMTP_PASSWORD=xxxx xxxx xxxx xxxx
+ADMIN_EMAIL_LIST=admin@exemplo.com,dev@exemplo.com</code></pre>
+            </div>
+        </section>
+
+        <footer>
+            <p>📘 Runbook - WhatsApp Medic Scheduler v2.0</p>
+            <p>Última atualização: Dezembro 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
