@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGPD - WhatsApp Medic Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .lgpd-layout { display: flex; padding-top: 80px; }
+        .sidebar { width: 280px; height: calc(100vh - 80px); position: fixed; left: 0; top: 80px; background: var(--bg-card); border-right: 1px solid var(--border-color); overflow-y: auto; padding: 1.5rem 0; z-index: 100; }
+        .sidebar-header { padding: 0 1.5rem 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+        .sidebar-header h3 { color: var(--primary); font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: all 0.2s; border-left: 3px solid transparent; }
+        .sidebar-menu li a:hover { background: var(--bg-hover); color: var(--primary); border-left-color: var(--primary); }
+        .sidebar-menu li a.active { background: rgba(37, 211, 102, 0.1); color: var(--primary); border-left-color: var(--primary); font-weight: 500; }
+        .sidebar-menu li a i { width: 20px; text-align: center; font-size: 0.85rem; }
+        .lgpd-content { flex: 1; margin-left: 280px; max-width: calc(100% - 280px); padding: 2rem 3rem; }
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+        .page-header p { color: var(--text-secondary); font-size: 1.2rem; }
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.8rem; color: var(--primary); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+        .section h3 { font-size: 1.3rem; color: var(--text-primary); margin: 1.5rem 0 1rem; }
+        .card { background: var(--bg-card); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
+        .code-block { background: #0d1117; border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 1rem 0; border: 1px solid var(--border-color); font-family: monospace; font-size: 0.9rem; color: #7dd3fc; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-hover); font-weight: 600; color: var(--primary); }
+        .alert { padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid; }
+        .alert-info { background: rgba(52, 183, 241, 0.1); border-color: #34b7f1; }
+        .alert-success { background: rgba(37, 211, 102, 0.1); border-color: #25D366; }
+        .menu-toggle { display: none; position: fixed; bottom: 2rem; right: 2rem; width: 56px; height: 56px; background: var(--primary); border-radius: 50%; border: none; cursor: pointer; z-index: 1000; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); color: #000; font-size: 1.5rem; }
+        .page-footer { text-align: center; padding: 2rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 3rem; }
+        @media (max-width: 968px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .sidebar.active { transform: translateX(0); }
+            .lgpd-content { margin-left: 0; max-width: 100%; padding: 2rem 1.5rem; }
+            .menu-toggle { display: flex; align-items: center; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp Medic Scheduler</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="api.html">API Reference</a></li>
+            <li><a href="agent.html">Agent IA</a></li>
+            <li><a href="mock-gateway.html">Mock Gateway</a></li>
+            <li><a href="technical.html">Technical</a></li>
+            <li><a href="lgpd.html" class="active">LGPD</a></li>
+            <li><a href="runbook.html">Runbook</a></li>
+            <li><a href="https://github.com/ualers2/WhatsAppMedicSheduler" target="_blank"><i class="fab fa-github"></i></a></li>
+        </ul>
+    </nav>
+
+    <div class="lgpd-layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-lock"></i> Conformidade LGPD</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#introducao"><i class="fas fa-book"></i> Introdução</a></li>
+                <li><a href="#dados"><i class="fas fa-database"></i> Classificação Dados</a></li>
+                <li><a href="#legal"><i class="fas fa-gavel"></i> Base Legal</a></li>
+                <li><a href="#protecao"><i class="fas fa-shield"></i> Medidas Proteção</a></li>
+                <li><a href="#direitos"><i class="fas fa-user"></i> Direitos Titular</a></li>
+                <li><a href="#consentimento"><i class="fas fa-check-circle"></i> Consentimento</a></li>
+                <li><a href="#privacidade"><i class="fas fa-eye-slash"></i> Política Privacidade</a></li>
+                <li><a href="#auditoria"><i class="fas fa-chart-bar"></i> Auditoria</a></li>
+                <li><a href="#incidentes"><i class="fas fa-alert-triangle"></i> Incidentes</a></li>
+                <li><a href="#responsabilidades"><i class="fas fa-users"></i> Responsabilidades</a></li>
+                <li><a href="#testes"><i class="fas fa-check"></i> Testes</a></li>
+            </ul>
+        </aside>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <main class="lgpd-content">
+            <div class="page-header">
+                <h1><i class="fas fa-lock"></i> LGPD - Lei Geral de Proteção de Dados</h1>
+                <p>Conformidade, Segurança e Proteção de Dados Pessoais</p>
+            </div>
+
+            <!-- Introdução -->
+            <section id="introducao" class="section">
+                <h2>1. Introdução</h2>
+                <div class="card">
+                    <p>O <strong>WhatsAppMedicSheduler</strong> implementa conformidade completa com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018)</strong> - LGPD.</p>
+                    <h3>10 Princípios Fundamentais da LGPD</h3>
+                    <table>
+                        <tr><th>Princípio</th><th>Descrição</th></tr>
+                        <tr><td>Legalidade</td><td>Processamento deve ter base legal</td></tr>
+                        <tr><td>Transparência</td><td>Paciente informado sobre processamento</td></tr>
+                        <tr><td>Necessidade</td><td>Apenas dados necessários para finalidade</td></tr>
+                        <tr><td>Adequação</td><td>Dados relevantes e proporcional</td></tr>
+                        <tr><td>Livre Acesso</td><td>Paciente pode acessar seus dados</td></tr>
+                        <tr><td>Qualidade</td><td>Dados precisos e atualizados</td></tr>
+                        <tr><td>Segurança</td><td>Proteção contra acessos indevidos</td></tr>
+                        <tr><td>Prevenção</td><td>Medidas preventivas de violação</td></tr>
+                        <tr><td>Não-Discriminação</td><td>Sem decisões discriminatórias automáticas</td></tr>
+                        <tr><td>Responsabilidade</td><td>Prestação de contas (accountability)</td></tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Classificação de Dados -->
+            <section id="dados" class="section">
+                <h2>2. Classificação de Dados Processados</h2>
+                <h3>2.1 Dados Pessoais Básicos</h3>
+                <div class="card">
+                    <table>
+                        <tr><th>Campo</th><th>Descrição</th><th>Armazenamento</th><th>Retenção</th></tr>
+                        <tr><td>ID do Paciente</td><td>Identificador único</td><td>MongoDB</td><td>Contrato + 5 anos</td></tr>
+                        <tr><td>Nome Completo</td><td>Nome civil</td><td>MongoDB</td><td>Contrato + 5 anos</td></tr>
+                        <tr><td>Número WhatsApp</td><td>Contato + identificação</td><td>MongoDB + Hash</td><td>Contrato + 5 anos</td></tr>
+                        <tr><td>Nome Social</td><td>Se aplicável</td><td>MongoDB</td><td>Contrato + 5 anos</td></tr>
+                    </table>
+                </div>
+
+                <h3>2.2 Dados Sensíveis</h3>
+                <div class="card">
+                    <table>
+                        <tr><th>Campo</th><th>Classificação</th><th>Proteção</th></tr>
+                        <tr><td>CPF</td><td>Identificação</td><td>Hash HMAC-SHA256 + Mascarado</td></tr>
+                        <tr><td>RG</td><td>Identificação</td><td>Hash HMAC-SHA256 + Mascarado</td></tr>
+                        <tr><td>Data Nascimento</td><td>Biométrica</td><td>Hash HMAC-SHA256 + Mascarado</td></tr>
+                        <tr><td>Sexo/Gênero</td><td>Biométrica</td><td>Armazenado em texto criptografado</td></tr>
+                        <tr><td>E-mail</td><td>Contato</td><td>Armazenado em texto criptografado</td></tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Base Legal -->
+            <section id="legal" class="section">
+                <h2>3. Base Legal</h2>
+                <div class="card">
+                    <h3>Artigo 7º - LGPD (Dados Comuns)</h3>
+                    <ul>
+                        <li><strong>Art. 7º, II</strong>: Cumprimento de obrigação legal ou regulatória</li>
+                        <li><strong>Art. 7º, III</strong>: Execução de contrato</li>
+                        <li><strong>Art. 7º, V</strong>: Proteção de direitos</li>
+                    </ul>
+
+                    <h3>Artigo 11º - LGPD (Dados Sensíveis)</h3>
+                    <p><strong>Art. 11º, II</strong>: "Para proteção de direitos, em contrato ou nos procedimentos preliminares a sua celebração, pela administração pública, na execução de políticas públicas previstas em leis ou regulamentos ou em contrato"</p>
+
+                    <div class="alert alert-info">
+                        <strong>Características do Consentimento</strong>
+                        <ul>
+                            <li>✅ Explícito: Antes de qualquer processamento</li>
+                            <li>✅ Inequívoco: Confirmação clara do paciente</li>
+                            <li>✅ Informado: Paciente entende o que autoriza</li>
+                            <li>✅ Livre: Sem coerção ou pressão</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Medidas de Proteção -->
+            <section id="protecao" class="section">
+                <h2>4. Medidas de Proteção</h2>
+                <h3>4.1 Hash de Dados Sensíveis</h3>
+                <div class="card">
+                    <p>Dados sensíveis em logs são protegidos com HMAC-SHA256:</p>
+                    <div class="code-block">@classmethod
+def hash_sensitive_value(cls, SECRET_KEY: str, value: str) -> str:
+    """Hash HMAC-SHA256 de valores sensíveis"""
+    if not value:
+        return None
+    return hmac.new(SECRET_KEY.encode(), value.encode(), 
+                    hashlib.sha256).hexdigest()</div>
+                </div>
+
+                <h3>4.2 Mascaramento em Logs</h3>
+                <div class="card">
+                    <p><strong>Exemplo de log seguro:</strong></p>
+                    <div class="code-block">{
+  "timestamp": "2025-01-17T10:30:45Z",
+  "action": "PATIENT_DATA_FETCHED",
+  "user": "8f2a9c7d...",  // Hash
+  "patient_name": "João Silva",  // Permitido
+  "cpf": "e7f4c9a2...",  // Hash
+  "level": "INFO"
+}</div>
+                </div>
+
+                <h3>4.3 Armazenamento Local</h3>
+                <div class="alert alert-success">
+                    <strong>Histórico de conversa armazenado LOCALMENTE (SQLite)</strong>
+                    <ul>
+                        <li>✅ Dados NÃO enviados para OpenAI</li>
+                        <li>✅ Nenhum PII compartilhado com terceiros</li>
+                        <li>✅ Criptografia em trânsito com TLS</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Direitos do Titular -->
+            <section id="direitos" class="section">
+                <h2>5. Direitos do Titular</h2>
+                <div class="card">
+                    <h3>6 Direitos Implementados</h3>
+                    <table>
+                        <tr><th>Direito</th><th>Endpoint</th><th>Prazo</th></tr>
+                        <tr><td>Acesso (Art. 18)</td><td>GET /api/patient/data/&lt;id&gt;</td><td>15 dias</td></tr>
+                        <tr><td>Retificação (Art. 19)</td><td>PUT /api/patient/data/&lt;id&gt;</td><td>15 dias</td></tr>
+                        <tr><td>Eliminação (Art. 17)</td><td>DELETE /api/patient/data/&lt;id&gt;</td><td>30 dias</td></tr>
+                        <tr><td>Portabilidade (Art. 20)</td><td>GET /api/patient/export/&lt;id&gt;</td><td>15 dias</td></tr>
+                        <tr><td>Oposição (Art. 21)</td><td>POST /api/patient/object</td><td>15 dias</td></tr>
+                        <tr><td>Não-Discriminação</td><td>Implementado em lógica</td><td>Contínuo</td></tr>
+                    </table>
+
+                    <h3>Canais de Acesso</h3>
+                    <ul>
+                        <li><strong>WhatsApp:</strong> Via agente IA ("Quero meus dados")</li>
+                        <li><strong>E-mail:</strong> privacy@clinica.com</li>
+                        <li><strong>Formulário Web:</strong> https://clinica.com/privacy/request</li>
+                        <li><strong>Telefone:</strong> Atendimento humano</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Consentimento -->
+            <section id="consentimento" class="section">
+                <h2>6. Consentimento do Paciente</h2>
+                <div class="card">
+                    <h3>Fluxo de Consentimento</h3>
+                    <div class="code-block">Paciente: "Olá, gostaria de agendar"
+
+Agente: "Para agendar, autoriza a coleta de dados?
+        Ao continuar, você concorda com nossa política 
+        de privacidade."
+
+Paciente: "Sim, autorizo"
+
+[Sistema registra consentimento com ID único]</div>
+
+                    <h3>Documentação de Consentimento</h3>
+                    <p>Cada consentimento é registrado com:</p>
+                    <div class="code-block">{
+  "consent_id": "CONSENT-2025-01-17-abc123",
+  "patient_id": "patient_123",
+  "type": "data_processing",
+  "scope": ["agendamento", "histórico_conversa"],
+  "given_at": "2025-01-17T10:30:45Z",
+  "method": "implicit_action",
+  "valid": true,
+  "revoke_at": null
+}</div>
+
+                    <div class="alert alert-info">
+                        <strong>O consentimento pode ser revogado:</strong> Paciente pode solicitar "Revogar consentimento" a qualquer momento.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Política de Privacidade -->
+            <section id="privacidade" class="section">
+                <h2>7. Política de Privacidade</h2>
+                <div class="card">
+                    <h3>O que Não é Compartilhado</h3>
+                    <ul>
+                        <li>❌ OpenAI (conversas locais, histórico local)</li>
+                        <li>❌ Redes sociais</li>
+                        <li>❌ Publicidade/marketing</li>
+                        <li>❌ Terceiros não autorizados</li>
+                    </ul>
+
+                    <h3>O que É Compartilhado (Apenas Se Necessário)</h3>
+                    <ul>
+                        <li>✅ Sistema médico (NetPACS) - Para agendamento</li>
+                        <li>✅ Vonage - Apenas número WhatsApp para confirmações</li>
+                        <li>✅ Equipe interna - Com hash de segurança em logs</li>
+                    </ul>
+
+                    <div class="alert alert-info">
+                        <strong>Acordos de Processamento:</strong> Contratos Data Processing Agreement com NetPACS e Vonage garantem conformidade.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Auditoria -->
+            <section id="auditoria" class="section">
+                <h2>8. Auditoria e Conformidade</h2>
+                <div class="card">
+                    <h3>Sistema de Logs Auditado</h3>
+                    <div class="code-block">Logs.log_action(
+    "SENSITIVE_DATA_ACCESSED",
+    details={
+        "patient_id": hash,
+        "data_type": "birthdate",
+        "access_time": "2025-01-17T10:30:45Z",
+        "accessed_by": "agent_hash"
+    },
+    level="INFO"
+)</div>
+
+                    <h3>Relatórios Gerados Automaticamente</h3>
+                    <ul>
+                        <li>📊 Relatório de Acesso a Dados (mensal)</li>
+                        <li>📊 Relatório de Consentimentos (mensal)</li>
+                        <li>📊 Relatório de Exclusões (trimestral)</li>
+                        <li>📊 Relatório de Incidentes (conforme necessário)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Incidentes -->
+            <section id="incidentes" class="section">
+                <h2>9. Tratamento de Incidentes</h2>
+                <div class="card">
+                    <h3>Notificação Conforme Art. 33-34 LGPD</h3>
+                    <table>
+                        <tr><th>Ação</th><th>Prazo</th><th>Destinatário</th></tr>
+                        <tr><td>Comunicar ANPD</td><td>48 horas</td><td>Autoridade Nacional</td></tr>
+                        <tr><td>Comunicar titular</td><td>48 horas</td><td>Paciente (se houver risco)</td></tr>
+                    </table>
+
+                    <h3>Procedimento de Resposta</h3>
+                    <ol>
+                        <li>Detecção: Sistema identifica anomalia</li>
+                        <li>Avaliação: Equipe técnica avalia escopo</li>
+                        <li>Contenção: Isolamento imediato de sistemas</li>
+                        <li>Notificação: Envio de alertas</li>
+                        <li>Documentação: Registro em base de incidentes</li>
+                        <li>Remediação: Implementação de correções</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Responsabilidades -->
+            <section id="responsabilidades" class="section">
+                <h2>10. Responsabilidades e Papéis</h2>
+                <div class="card">
+                    <table>
+                        <tr><th>Papel</th><th>Responsabilidade</th><th>Contato</th></tr>
+                        <tr><td>Controlador</td><td>Clínica/Instituição de Saúde</td><td>(Define em contrato)</td></tr>
+                        <tr><td>Processador</td><td>MedicSheduler/Desenvolvedor</td><td>tech@medicsheduler.com</td></tr>
+                        <tr><td>DPO</td><td>Proteção de Dados</td><td>dpo@clinica.com</td></tr>
+                        <tr><td>Seg. Info.</td><td>Monitoramento/Incidentes</td><td>security@clinica.com</td></tr>
+                    </table>
+
+                    <h3>Responsabilidades do Processador</h3>
+                    <ul>
+                        <li>✅ Implementar medidas de segurança</li>
+                        <li>✅ Manter logs de processamento</li>
+                        <li>✅ Cumprir instruções do controlador</li>
+                        <li>✅ Notificar incidentes imediatamente</li>
+                        <li>✅ Cooperar em auditorias</li>
+                        <li>✅ Excluir dados conforme instruído</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Testes -->
+            <section id="testes" class="section">
+                <h2>11. Testes de Conformidade</h2>
+                <div class="card">
+                    <h3>Checklist de Conformidade</h3>
+                    <div class="code-block">cd backend && pytest tests/lgpd/test_data_protection.py -v</div>
+
+                    <h3>Testes Incluem</h3>
+                    <ul>
+                        <li>✅ Verificação de hash em logs</li>
+                        <li>✅ Verificação de criptografia em repouso</li>
+                        <li>✅ Verificação de retenção de dados</li>
+                        <li>✅ Verificação de consentimento</li>
+                        <li>✅ Verificação de direitos exercidos</li>
+                        <li>✅ Verificação de auditoria</li>
+                    </ul>
+
+                    <h3>Auditoria Externa (Recomendado)</h3>
+                    <p>Realizar anualmente:</p>
+                    <ol>
+                        <li><strong>Auditoria de Segurança:</strong> Código, infraestrutura, processos</li>
+                        <li><strong>Auditoria de Conformidade:</strong> LGPD, HIPAA (se aplicável)</li>
+                        <li><strong>Teste de Penetração:</strong> Verificar vulnerabilidades</li>
+                    </ol>
+                </div>
+            </section>
+
+            <footer class="page-footer">
+                <p><i class="fas fa-lock"></i> Conformidade LGPD - WhatsApp Medic Scheduler</p>
+                <p>Última atualização: Janeiro 2025 | Versão 1.0</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+        }
+
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 968) {
+                    sidebar.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                }
+            });
+        });
+
+        const sections = document.querySelectorAll('section[id]');
+        const menuLinks = document.querySelectorAll('.sidebar-menu a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 150;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            menuLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
