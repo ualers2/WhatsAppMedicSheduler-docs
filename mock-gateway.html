@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net Mock API Gateway - WhatsApp Medic Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .mock-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid #f39c12;
+        }
+        .mock-header h3 {
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+        .mock-header p {
+            color: #bbb;
+            margin: 0;
+        }
+        .model-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .model-card h4 {
+            color: #25d366;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .model-card h4 i {
+            font-size: 18px;
+        }
+        .field-table {
+            width: 100%;
+            font-size: 13px;
+        }
+        .field-table th {
+            background: rgba(37,211,102,0.1);
+            color: #25d366;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .field-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .field-table code {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .controller-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .controller-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .controller-card:hover {
+            border-color: rgba(37,211,102,0.5);
+            transform: translateY(-3px);
+        }
+        .controller-card h4 {
+            color: #fff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .controller-card h4 i {
+            color: #25d366;
+        }
+        .controller-card p {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .controller-card .endpoints {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .controller-card .endpoints code {
+            display: block;
+            margin: 3px 0;
+            background: rgba(0,0,0,0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .comparison-table {
+            width: 100%;
+            margin: 20px 0;
+        }
+        .comparison-table th {
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            color: #000;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            vertical-align: top;
+        }
+        .comparison-table tr:hover td {
+            background: rgba(37,211,102,0.05);
+        }
+        .feature-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .feature-badge.identical {
+            background: #25d366;
+            color: #000;
+        }
+        .feature-badge.mock {
+            background: #f39c12;
+            color: #000;
+        }
+        .swagger-box {
+            background: linear-gradient(135deg, #1a4a3a 0%, #0d2d21 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(37,211,102,0.3);
+        }
+        .swagger-box h4 {
+            color: #25d366;
+            margin-bottom: 15px;
+        }
+        .docker-compose-note {
+            background: rgba(52,152,219,0.1);
+            border-left: 4px solid #3498db;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        .docker-compose-note h5 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp Medic Scheduler</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="api.html">API Reference</a></li>
+            <li><a href="agent.html">Agent IA</a></li>
+            <li><a href="mock-gateway.html" class="active">Mock Gateway</a></li>
+            <li><a href="setup.html">Setup</a></li>
+            <li><a href="https://github.com/ualers2/WhatsAppMedicSheduler" target="_blank"><i class="fab fa-github"></i></a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1><i class="fas fa-server"></i> Net Mock API Gateway</h1>
+        <p>API Mock idêntica à homologação NetAnimati/NetRIS para testes granulares</p>
+    </header>
+
+    <!-- Main Content -->
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-section">
+                <h4>Visão Geral</h4>
+                <ul>
+                    <li><a href="#overview">Introdução</a></li>
+                    <li><a href="#purpose">Propósito</a></li>
+                    <li><a href="#architecture">Arquitetura</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Controllers</h4>
+                <ul>
+                    <li><a href="#auth-controller">Auth Controller</a></li>
+                    <li><a href="#paciente-controller">Paciente Controller</a></li>
+                    <li><a href="#horario-controller">Horário Controller</a></li>
+                    <li><a href="#atendimento-controller">Atendimento Controller</a></li>
+                    <li><a href="#convenio-controller">Convênio Controller</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Modelos</h4>
+                <ul>
+                    <li><a href="#model-patient">Patient</a></li>
+                    <li><a href="#model-schedule">Schedule</a></li>
+                    <li><a href="#model-appointment">Appointment</a></li>
+                    <li><a href="#model-convenio">Convênio</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Setup</h4>
+                <ul>
+                    <li><a href="#docker">Docker</a></li>
+                    <li><a href="#authentication">Autenticação</a></li>
+                    <li><a href="#swagger">Swagger UI</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="docs-content">
+            <!-- Overview -->
+            <section id="overview" class="doc-section">
+                <h2><i class="fas fa-info-circle"></i> Introdução</h2>
+                
+                <div class="mock-header">
+                    <h3><i class="fas fa-clone"></i> API Mock Idêntica à Homologação</h3>
+                    <p>O Net Mock API Gateway replica fielmente a estrutura e comportamento da API de homologação NetAnimati/NetRIS, permitindo testes completos sem depender de ambiente externo.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb"></i>
+                    <span><strong>Versão:</strong> 3.98.2 | <strong>Base Path:</strong> /api-gateway | <strong>Porta:</strong> 3001 (Docker) / 5001 (local)</span>
+                </div>
+
+                <h3>Características</h3>
+                <ul>
+                    <li><strong>Fidelidade Total:</strong> Mesmos endpoints, payloads e respostas da API real</li>
+                    <li><strong>50+ Campos NetRIS:</strong> Schedule com estrutura completa de 48 campos</li>
+                    <li><strong>Swagger UI:</strong> Documentação interativa integrada</li>
+                    <li><strong>PostgreSQL:</strong> Persistência real de dados mock</li>
+                    <li><strong>Docker Ready:</strong> Container isolado com health check</li>
+                    <li><strong>Autenticação JWT:</strong> Suporte a Bearer token ou MOCK_API_KEY</li>
+                </ul>
+            </section>
+
+            <!-- Purpose -->
+            <section id="purpose" class="doc-section">
+                <h2><i class="fas fa-bullseye"></i> Propósito</h2>
+                
+                <h3>Por que um Mock Gateway?</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Cenário</th>
+                            <th>API de Homologação</th>
+                            <th>Mock Gateway</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Disponibilidade</strong></td>
+                            <td>Depende de servidor externo</td>
+                            <td><span class="feature-badge identical">24/7 Local</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Velocidade</strong></td>
+                            <td>Latência de rede (~200ms)</td>
+                            <td><span class="feature-badge identical">&lt;10ms localhost</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dados de Teste</strong></td>
+                            <td>Limitado/Compartilhado</td>
+                            <td><span class="feature-badge identical">Controle total</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reset de Estado</strong></td>
+                            <td>Impossível</td>
+                            <td><span class="feature-badge identical">Rebuild instantâneo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Testes Unitários</strong></td>
+                            <td>Flaky (rede)</td>
+                            <td><span class="feature-badge identical">100% confiável</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>CI/CD</strong></td>
+                            <td>Precisa de VPN/credenciais</td>
+                            <td><span class="feature-badge identical">Auto-suficiente</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Casos de Uso</h3>
+                <ul>
+                    <li>✅ Desenvolvimento local sem internet</li>
+                    <li>✅ Testes de integração automatizados</li>
+                    <li>✅ Validação de fluxos de agendamento</li>
+                    <li>✅ Simulação de cenários edge-case</li>
+                    <li>✅ Treinamento de novos desenvolvedores</li>
+                    <li>✅ Debugging sem afetar produção</li>
+                </ul>
+            </section>
+
+            <!-- Architecture -->
+            <section id="architecture" class="doc-section">
+                <h2><i class="fas fa-sitemap"></i> Arquitetura</h2>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Estrutura do Módulo</span>
+                    </div>
+                    <pre><code>net_mock_api_gateway/
+├── api_gateway.py              # App Flask principal + Swagger
+├── Dockerfile                  # Container config
+├── requirements.txt            # Dependências isoladas
+├── blueprints/
+│   └── netpacs_mock/
+│       ├── routes.py           # Blueprint principal
+│       ├── auth_controller.py  # JWT auth
+│       ├── auth_middleware.py  # Middleware de autenticação
+│       ├── paciente_controller.py
+│       ├── horario_controller.py
+│       ├── atendimento_controller.py
+│       ├── convenio_controller.py
+│       ├── medico_controller.py
+│       └── healthcare_controller.py
+├── models/
+│   ├── db.py                   # SQLAlchemy config
+│   └── mock_models.py          # Patient, Schedule, Appointment, Convenio
+├── migrations/
+│   └── recreate_mock_tables.py # Rebuild database
+└── util/
+    ├── config.py
+    └── logger.py</code></pre>
+                </div>
+
+                <h3>Stack Tecnológico</h3>
+                <table class="doc-table">
+                    <tbody>
+                        <tr><td><strong>Framework</strong></td><td>Flask 2.x</td></tr>
+                        <tr><td><strong>Database</strong></td><td>PostgreSQL (mesmo do backend)</td></tr>
+                        <tr><td><strong>ORM</strong></td><td>SQLAlchemy</td></tr>
+                        <tr><td><strong>Docs</strong></td><td>Flasgger (Swagger 2.0)</td></tr>
+                        <tr><td><strong>Auth</strong></td><td>JWT + MOCK_API_KEY</td></tr>
+                        <tr><td><strong>Container</strong></td><td>Docker + Gunicorn</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Controllers -->
+            <section id="auth-controller" class="doc-section">
+                <h2><i class="fas fa-lock"></i> Controllers</h2>
+                
+                <div class="controller-grid">
+                    <div class="controller-card">
+                        <h4><i class="fas fa-key"></i> Auth Controller</h4>
+                        <p>Geração de tokens JWT para autenticação na API.</p>
+                        <div class="endpoints">
+                            <code>POST /security/api/access-token/{auth}</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-user"></i> Paciente Controller</h4>
+                        <p>CRUD completo de pacientes com filtros avançados.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/pacientes</code>
+                            <code>POST /netris/api/pacientes</code>
+                            <code>GET /netris/api/pacientes/{id}</code>
+                            <code>PUT /netris/api/pacientes/{id}</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-calendar"></i> Horário Controller</h4>
+                        <p>Busca de slots disponíveis no formato NetRIS.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/horarios</code>
+                            <code>POST /netris/api/horarios</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-clipboard-list"></i> Atendimento Controller</h4>
+                        <p>Gestão de consultas/exames agendados.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/atendimentos</code>
+                            <code>POST /netpacs/api/atendimentos</code>
+                            <code>GET /netris/api/atendimentos/{id}</code>
+                            <code>PATCH /netris/api/atendimentos/{id}</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-id-card"></i> Convênio Controller</h4>
+                        <p>Listagem de convênios e planos disponíveis.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/convenios</code>
+                            <code>GET /netris/api/convenios/{id}</code>
+                            <code>GET /netris/api/plano-convenios</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-user-md"></i> Médico Controller</h4>
+                        <p>Listagem de médicos e profissionais.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/medicos</code>
+                            <code>GET /netris/api/profissionais</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Paciente Controller Detail -->
+            <section id="paciente-controller" class="doc-section">
+                <h2><i class="fas fa-user"></i> Paciente Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/pacientes</span>
+                    </div>
+                    <p>Lista pacientes com suporte a filtros avançados (eq, like, ilike, gt, gte, lt, lte, ne).</p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <tr><td><code>nome</code></td><td>string</td><td>Filtro por nome (ex: ilike:maria)</td></tr>
+                        <tr><td><code>cpf</code></td><td>string</td><td>Filtro por CPF (ex: eq:12345678900)</td></tr>
+                        <tr><td><code>telefone_celular</code></td><td>string</td><td>Filtro por telefone (normalizado)</td></tr>
+                        <tr><td><code>email</code></td><td>string</td><td>Filtro por email</td></tr>
+                        <tr><td><code>listPatId</code></td><td>string</td><td>Lista de PatIds separados por vírgula</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (max: 100)</td></tr>
+                        <tr><td><code>page</code></td><td>int</td><td>Paginação</td></tr>
+                    </table>
+
+                    <h4>Exemplo de Request</h4>
+                    <div class="code-block">
+                        <pre><code class="bash"># Buscar por telefone (com normalização automática)
+curl -X GET "http://localhost:3001/api-gateway/netris/api/pacientes?telefone_celular=ilike:31999999999&limit=10" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"</code></pre>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-phone"></i>
+                        <span><strong>Normalização de Telefone:</strong> O sistema testa automaticamente variações com/sem o nono dígito (ex: 31912345678 e 3112345678).</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Horário Controller Detail -->
+            <section id="horario-controller" class="doc-section">
+                <h2><i class="fas fa-calendar"></i> Horário Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/horarios</span>
+                    </div>
+                    <p>Busca slots disponíveis. <strong>Retorna array de arrays</strong> conforme especificação NetRIS: <code>[[{horario1}, {horario2}]]</code></p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <tr><td><code>dataBusca</code></td><td>string</td><td>Data inicial (DD/MM/YYYY) - obrigatório</td></tr>
+                        <tr><td><code>dataFinalBusca</code></td><td>string</td><td>Data final (DD/MM/YYYY)</td></tr>
+                        <tr><td><code>idConvenio</code></td><td>int</td><td>ID do convênio - obrigatório</td></tr>
+                        <tr><td><code>idFilial</code></td><td>int</td><td>ID da filial - obrigatório</td></tr>
+                        <tr><td><code>idPaciente</code></td><td>int</td><td>ID do paciente - obrigatório</td></tr>
+                        <tr><td><code>idPlanoConvenio</code></td><td>int</td><td>ID do plano - obrigatório</td></tr>
+                        <tr><td><code>listIdProcedimento</code></td><td>string</td><td>IDs separados por vírgula (ex: 1,2,3)</td></tr>
+                        <tr><td><code>idMedico</code></td><td>int</td><td>ID do médico (opcional)</td></tr>
+                        <tr><td><code>buscaInteligente</code></td><td>bool</td><td>Otimizar resultados</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados</td></tr>
+                    </table>
+
+                    <h4>Exemplo de Response (Formato NetRIS)</h4>
+                    <div class="code-block">
+                        <pre><code class="json">[[
+  {
+    "idHorario": null,
+    "idEscala": 10274,
+    "idMedico": 13155,
+    "nomeMedico": "CLINICA SAO JOSE",
+    "medicoProvisorio": null,
+    "idSala": 3,
+    "nomeSala": "RAIO-X/ MAMOGRAFIA",
+    "data": 1764298800000,
+    "dataString": "28/11/2025",
+    "horaInicial": 46800000,
+    "horaInicialString": "10:00",
+    "horaFinal": 47400000,
+    "indisponivel": null,
+    "agrupador": 1,
+    "idProcedimento": 58,
+    "nomeProcedimento": "RX SEIOS PARANASAIS",
+    "tipoProcedimento": "EXAME",
+    "duracaoProcedimento": 10,
+    "listIdHorario": [null, null],
+    "cor": "#000000",
+    "duracao": 10,
+    "idAparelho": 2,
+    "idFilial": 1,
+    "diaSemana": "5",
+    "nomeDiaSemana": "Sexta-Feira",
+    "restrito": false,
+    "idUnidade": 5,
+    "idModalidade": 1,
+    "tipoAtendimento": "EXAME_AMBULATORIAL",
+    "procedimentoRecorrente": false
+  }
+]]</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Atendimento Controller -->
+            <section id="atendimento-controller" class="doc-section">
+                <h2><i class="fas fa-clipboard-list"></i> Atendimento Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api-gateway/netpacs/api/atendimentos</span>
+                    </div>
+                    <p>Salva um novo atendimento (consulta/exame) com estrutura completa da API Real.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "accessionNo": "5902030",
+  "paciente": {
+    "altura": "1.80",
+    "birthDateString": "1998-05-20",
+    "celular": "048999997711",
+    "cpf": "000.000.000-00",
+    "email": "paciente@email.com",
+    "id": 0,
+    "name": "Maria Fernandes",
+    "nomeMae": "Maria",
+    "nomeSocial": "Maria da Cruz",
+    "patId": "3484",
+    "patObs": "Paciente teste",
+    "peso": "70",
+    "rg": "99999",
+    "sex": "F"
+  },
+  "protocolo": "1313213221",
+  "solicitanteCrm": "12345",
+  "solicitanteEstadoCrm": "SC",
+  "solicitanteWorklist": "José da Silva",
+  "modality": "MR",
+  "titulo": "Ressonância MR",
+  "studyDateTimeString": "2020-12-25 10:15:35",
+  "indicacaoClinica": "jejum de 8h",
+  "convenio": "UNIMED",
+  "idModalidade": 5,
+  "idProcedimento": 4,
+  "idUnidade": 11
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Convênio Controller -->
+            <section id="convenio-controller" class="doc-section">
+                <h2><i class="fas fa-id-card"></i> Convênio Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/convenios</span>
+                    </div>
+                    <p>Lista todos os convênios disponíveis. <strong>Cada convênio inclui <code>id_filial</code></strong> obrigatório para SearchSlots.</p>
+                    
+                    <h4>Response</h4>
+                    <div class="code-block">
+                        <pre><code class="json">[
+  {
+    "id_convenio": 4,
+    "id_filial": 2,
+    "nome": "UNIMED",
+    "razao_social": "UNIMED",
+    "cnpj": "86.318.275/0001-93",
+    "convenio_particular": false,
+    "tipo_guia": "INFORMADA",
+    "permite_repetir_numero_guia": true
+  }
+]</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/plano-convenios</span>
+                    </div>
+                    <p>Lista planos de convênios, opcionalmente filtrados por <code>idConvenio</code>.</p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <tr><td><code>idConvenio</code></td><td>int</td><td>Filtrar por convênio específico</td></tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Models -->
+            <section id="model-patient" class="doc-section">
+                <h2><i class="fas fa-database"></i> Modelos de Dados</h2>
+
+                <div class="model-card">
+                    <h4><i class="fas fa-user"></i> Patient (mock_patients)</h4>
+                    <p>Estrutura completa compatível com NetAnimati/netRIS - 50+ campos.</p>
+                    
+                    <table class="field-table">
+                        <thead>
+                            <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>id_paciente</code></td><td>Integer</td><td>ID único do paciente</td></tr>
+                            <tr><td><code>pat_id</code></td><td>String</td><td>PAT{id} - identificador externo</td></tr>
+                            <tr><td><code>nome</code></td><td>String</td><td>Nome completo</td></tr>
+                            <tr><td><code>sexo</code></td><td>String</td><td>M ou F</td></tr>
+                            <tr><td><code>data_nascimento</code></td><td>BigInt</td><td>Timestamp em millisegundos</td></tr>
+                            <tr><td><code>cpf</code></td><td>String</td><td>CPF (só números)</td></tr>
+                            <tr><td><code>telefone_celular</code></td><td>String</td><td>Celular/WhatsApp</td></tr>
+                            <tr><td><code>email</code></td><td>String</td><td>E-mail</td></tr>
+                            <tr><td><code>nome_social</code></td><td>String</td><td>Nome social</td></tr>
+                            <tr><td><code>peso</code></td><td>String</td><td>Peso em kg</td></tr>
+                            <tr><td><code>altura</code></td><td>String</td><td>Altura em metros</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="model-schedule" class="doc-section">
+                <div class="model-card">
+                    <h4><i class="fas fa-calendar-alt"></i> Schedule (mock_schedules)</h4>
+                    <p>Formato EXATO da API NetRIS - <strong>48 campos</strong> conforme especificação.</p>
+                    
+                    <table class="field-table">
+                        <thead>
+                            <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>idHorario</code></td><td>Integer</td><td>null = disponível, ID = ocupado</td></tr>
+                            <tr><td><code>idEscala</code></td><td>Integer</td><td>ID da escala médica</td></tr>
+                            <tr><td><code>idMedico</code></td><td>Integer</td><td>ID do médico</td></tr>
+                            <tr><td><code>nomeMedico</code></td><td>String</td><td>Nome do médico</td></tr>
+                            <tr><td><code>idSala</code></td><td>Integer</td><td>ID da sala</td></tr>
+                            <tr><td><code>nomeSala</code></td><td>String</td><td>Nome da sala</td></tr>
+                            <tr><td><code>data</code></td><td>BigInt</td><td>Timestamp em ms</td></tr>
+                            <tr><td><code>dataString</code></td><td>String</td><td>DD/MM/YYYY</td></tr>
+                            <tr><td><code>horaInicialString</code></td><td>String</td><td>HH:MM</td></tr>
+                            <tr><td><code>duracaoProcedimento</code></td><td>Integer</td><td>Minutos</td></tr>
+                            <tr><td><code>idProcedimento</code></td><td>Integer</td><td>ID do procedimento</td></tr>
+                            <tr><td><code>nomeProcedimento</code></td><td>String</td><td>Nome do procedimento</td></tr>
+                            <tr><td><code>tipoProcedimento</code></td><td>String</td><td>EXAME, CONSULTA, CIRURGIA</td></tr>
+                            <tr><td><code>tipoAtendimento</code></td><td>String</td><td>EXAME_AMBULATORIAL, etc</td></tr>
+                            <tr><td><code>diaSemana</code></td><td>String</td><td>1 a 7</td></tr>
+                            <tr><td><code>nomeDiaSemana</code></td><td>String</td><td>Segunda-Feira, etc</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="model-appointment" class="doc-section">
+                <div class="model-card">
+                    <h4><i class="fas fa-clipboard-check"></i> MockAppointment (mock_appointments)</h4>
+                    <p>Atendimento/agendamento confirmado.</p>
+                    
+                    <table class="field-table">
+                        <thead>
+                            <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>id_horario</code></td><td>String</td><td>Referência ao horário</td></tr>
+                            <tr><td><code>id_paciente</code></td><td>Integer</td><td>FK → mock_patients</td></tr>
+                            <tr><td><code>status</code></td><td>String</td><td>AGENDADO, CONFIRMADO, CANCELADO, CONCLUIDO</td></tr>
+                            <tr><td><code>accession_number</code></td><td>String</td><td>Número de acesso único</td></tr>
+                            <tr><td><code>protocolo</code></td><td>String</td><td>Protocolo do agendamento</td></tr>
+                            <tr><td><code>solicitante_crm</code></td><td>String</td><td>CRM do médico solicitante</td></tr>
+                            <tr><td><code>modality</code></td><td>String</td><td>MR, CT, US, etc</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="model-convenio" class="doc-section">
+                <div class="model-card">
+                    <h4><i class="fas fa-id-card"></i> Convenio (mock_convenios)</h4>
+                    <p>Estrutura completa de convênio com 80+ campos.</p>
+                    
+                    <table class="field-table">
+                        <thead>
+                            <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>id_convenio</code></td><td>Integer</td><td>ID único</td></tr>
+                            <tr><td><code>id_filial</code></td><td>Integer</td><td>Filial associada (CRÍTICO)</td></tr>
+                            <tr><td><code>nome</code></td><td>String</td><td>Nome do convênio</td></tr>
+                            <tr><td><code>razao_social</code></td><td>String</td><td>Razão social</td></tr>
+                            <tr><td><code>cnpj</code></td><td>String</td><td>CNPJ</td></tr>
+                            <tr><td><code>convenio_particular</code></td><td>Boolean</td><td>É particular?</td></tr>
+                            <tr><td><code>tipo_guia</code></td><td>String</td><td>INFORMADA, GERADA</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Docker -->
+            <section id="docker" class="doc-section">
+                <h2><i class="fab fa-docker"></i> Docker</h2>
+
+                <div class="docker-compose-note">
+                    <h5><i class="fas fa-info-circle"></i> Configuração do Container</h5>
+                    <p>O Mock Gateway roda como serviço Docker independente com resources limits e health check.</p>
+                </div>
+
+                <h3>Build & Run</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Comandos Docker</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code class="bash"># Build individual
+docker build -f net_mock_api_gateway/Dockerfile -t net_mock_api_gateway:latest .
+
+# Build via docker-compose
+docker-compose build net_mock_api_gateway
+
+# Iniciar serviço
+docker-compose up -d net_mock_api_gateway
+
+# Ver logs
+docker-compose logs -f net_mock_api_gateway
+
+# Testar health check
+curl http://localhost:3001/api-gateway/health</code></pre>
+                </div>
+
+                <h3>Configurações do Container</h3>
+                <table class="doc-table">
+                    <tbody>
+                        <tr><td><strong>Porta</strong></td><td>3001 (host) → 5001 (container)</td></tr>
+                        <tr><td><strong>RAM Limit</strong></td><td>800MB</td></tr>
+                        <tr><td><strong>CPU Limit</strong></td><td>1.25 cores</td></tr>
+                        <tr><td><strong>Health Check</strong></td><td>30s interval, 3 retries</td></tr>
+                        <tr><td><strong>Base Image</strong></td><td>Python 3.11-slim</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Authentication -->
+            <section id="authentication" class="doc-section">
+                <h2><i class="fas fa-key"></i> Autenticação</h2>
+
+                <p>O Mock Gateway suporta duas formas de autenticação:</p>
+
+                <h3>Opção A: MOCK_API_KEY (Recomendado para Dev)</h3>
+                <div class="code-block">
+                    <pre><code class="bash"># Use o valor de ANIMATI_PACS_MOCK_API_KEY do .env
+curl -X GET "http://localhost:3001/api-gateway/netris/api/convenios" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"</code></pre>
+                </div>
+
+                <h3>Opção B: Gerar JWT</h3>
+                <div class="code-block">
+                    <pre><code class="bash"># 1. Gerar token (válido por 100 dias)
+curl -X POST "http://localhost:3001/api-gateway/security/api/access-token/minha-chave-inicial-12345"
+
+# Response:
+# {
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+#   "expiresIn": 8640000,
+#   "tokenType": "Bearer"
+# }
+
+# 2. Usar o token
+curl -X GET "http://localhost:3001/api-gateway/netris/api/convenios" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</code></pre>
+                </div>
+
+                <h3>Rotas Públicas (sem auth)</h3>
+                <ul>
+                    <li><code>/api-gateway/security/api/access-token</code></li>
+                    <li><code>/api-gateway/health</code></li>
+                    <li><code>/api-gateway/v2/api-docs</code></li>
+                    <li><code>/api-gateway/swagger-ui.html</code></li>
+                </ul>
+            </section>
+
+            <!-- Swagger -->
+            <section id="swagger" class="doc-section">
+                <h2><i class="fas fa-book-open"></i> Swagger UI</h2>
+
+                <div class="swagger-box">
+                    <h4><i class="fas fa-external-link-alt"></i> Documentação Interativa</h4>
+                    <p>Acesse a documentação Swagger completa da Mock API:</p>
+                    <ul>
+                        <li><strong>Swagger UI:</strong> <code>http://localhost:3001/api-gateway/swagger-ui.html</code></li>
+                        <li><strong>API Spec (JSON):</strong> <code>http://localhost:3001/api-gateway/apispec.json</code></li>
+                        <li><strong>Swagger v2 Docs:</strong> <code>http://localhost:3001/api-gateway/v2/api-docs</code></li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-play-circle"></i>
+                    <span><strong>Teste Interativo:</strong> O Swagger UI permite executar requests diretamente na interface, testando todos os endpoints da Mock API.</span>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2025 WhatsApp Medic Scheduler. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
