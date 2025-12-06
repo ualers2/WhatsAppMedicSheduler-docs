@@ -42,14 +42,49 @@
                 </ul>
             </div>
             <div class="sidebar-section">
-                <h4>Endpoints</h4>
+                <h4>Agent (/api)</h4>
                 <ul>
-                    <li><a href="#health">Health Check</a></li>
-                    <li><a href="#webhook">Webhooks</a></li>
-                    <li><a href="#patients">Patients</a></li>
-                    <li><a href="#appointments">Appointments</a></li>
-                    <li><a href="#doctors">Doctors</a></li>
-                    <li><a href="#convenios">Convênios</a></li>
+                    <li><a href="#agent-health">Health Check</a></li>
+                    <li><a href="#agent-patient">Fetch Patient Info</a></li>
+                    <li><a href="#agent-system-state">System State</a></li>
+                    <li><a href="#agent-tokens">Tokens History</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Webhooks (/api/v1/webhook)</h4>
+                <ul>
+                    <li><a href="#webhook-twilio">Twilio Webhook</a></li>
+                    <li><a href="#webhook-vonage">Vonage Webhook</a></li>
+                    <li><a href="#webhook-vonage-status">Vonage Status</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Messages (/api/v1/messages)</h4>
+                <ul>
+                    <li><a href="#msg-twilio-model">Twilio Model Message</a></li>
+                    <li><a href="#msg-twilio-spare">Twilio Spare Message</a></li>
+                    <li><a href="#msg-vonage-spare">Vonage Spare Message</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Fallback (/fallback)</h4>
+                <ul>
+                    <li><a href="#fallback-transfer">Transfer to Human</a></li>
+                    <li><a href="#fallback-ticket">Ticket Status</a></li>
+                    <li><a href="#fallback-queue">Queue Status</a></li>
+                    <li><a href="#fallback-acknowledge">Acknowledge Transfer</a></li>
+                    <li><a href="#fallback-close">Close Ticket</a></li>
+                    <li><a href="#fallback-agent-stats">Agent Stats</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>RAG (/api/rag)</h4>
+                <ul>
+                    <li><a href="#rag-health">Health Check</a></li>
+                    <li><a href="#rag-stats">Stats</a></li>
+                    <li><a href="#rag-documents">Documents</a></li>
+                    <li><a href="#rag-search">Search</a></li>
+                    <li><a href="#rag-index">Indexing</a></li>
                 </ul>
             </div>
         </aside>
@@ -59,37 +94,47 @@
             <!-- Overview -->
             <section id="overview" class="doc-section">
                 <h2>Visão Geral</h2>
-                <p>A API do WhatsApp Medic Scheduler permite integração completa com o sistema de agendamento médico via WhatsApp.</p>
+                <p>A API do WhatsApp Medic Scheduler permite integração completa com o sistema de agendamento médico via WhatsApp com IA conversacional.</p>
                 
                 <h3>Base URL</h3>
                 <div class="code-block">
-                    <pre><code>https://api.whatsappmedic.com/v1</code></pre>
+                    <pre><code>http://localhost:5000</code></pre>
                 </div>
 
-                <h3>Ambientes</h3>
+                <h3>Blueprints</h3>
                 <table class="doc-table">
                     <thead>
                         <tr>
-                            <th>Ambiente</th>
-                            <th>URL</th>
+                            <th>Blueprint</th>
+                            <th>Prefixo</th>
                             <th>Descrição</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="env-badge dev">Development</span></td>
-                            <td><code>http://localhost:5000</code></td>
-                            <td>Ambiente local de desenvolvimento</td>
+                            <td><code>agent</code></td>
+                            <td>/api</td>
+                            <td>Agente IA, pacientes, sistema</td>
                         </tr>
                         <tr>
-                            <td><span class="env-badge staging">Staging</span></td>
-                            <td><code>https://staging-api.whatsappmedic.com</code></td>
-                            <td>Ambiente de homologação</td>
+                            <td><code>webhooks</code></td>
+                            <td>/api/v1/webhook</td>
+                            <td>Webhooks Twilio e Vonage</td>
                         </tr>
                         <tr>
-                            <td><span class="env-badge prod">Production</span></td>
-                            <td><code>https://api.whatsappmedic.com</code></td>
-                            <td>Ambiente de produção</td>
+                            <td><code>messages</code></td>
+                            <td>/api/v1/messages</td>
+                            <td>Envio de mensagens</td>
+                        </tr>
+                        <tr>
+                            <td><code>fallback</code></td>
+                            <td>/fallback</td>
+                            <td>Transferência para humanos</td>
+                        </tr>
+                        <tr>
+                            <td><code>rag</code></td>
+                            <td>/api/rag</td>
+                            <td>Sistema RAG (Retrieval)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,7 +143,7 @@
             <!-- Authentication -->
             <section id="authentication" class="doc-section">
                 <h2>Autenticação</h2>
-                <p>A API utiliza Bearer Token para autenticação. Inclua o token no header de todas as requisições:</p>
+                <p>A API utiliza Bearer Token para endpoints protegidos. Para webhooks, utilize os tokens de verificação dos provedores (Twilio/Vonage).</p>
                 
                 <div class="code-block">
                     <div class="code-header">
@@ -106,11 +151,6 @@
                         <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
                     </div>
                     <pre><code>Authorization: Bearer YOUR_API_TOKEN</code></pre>
-                </div>
-
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Para webhooks do WhatsApp, utilize o token de verificação configurado na Meta Business Suite.</span>
                 </div>
             </section>
 
@@ -126,500 +166,759 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><code>200</code></td>
-                            <td>OK</td>
-                            <td>Requisição bem-sucedida</td>
-                        </tr>
-                        <tr>
-                            <td><code>201</code></td>
-                            <td>Created</td>
-                            <td>Recurso criado com sucesso</td>
-                        </tr>
-                        <tr>
-                            <td><code>400</code></td>
-                            <td>Bad Request</td>
-                            <td>Requisição inválida ou malformada</td>
-                        </tr>
-                        <tr>
-                            <td><code>401</code></td>
-                            <td>Unauthorized</td>
-                            <td>Token inválido ou ausente</td>
-                        </tr>
-                        <tr>
-                            <td><code>403</code></td>
-                            <td>Forbidden</td>
-                            <td>Sem permissão para acessar o recurso</td>
-                        </tr>
-                        <tr>
-                            <td><code>404</code></td>
-                            <td>Not Found</td>
-                            <td>Recurso não encontrado</td>
-                        </tr>
-                        <tr>
-                            <td><code>429</code></td>
-                            <td>Too Many Requests</td>
-                            <td>Rate limit excedido</td>
-                        </tr>
-                        <tr>
-                            <td><code>500</code></td>
-                            <td>Server Error</td>
-                            <td>Erro interno do servidor</td>
-                        </tr>
+                        <tr><td><code>200</code></td><td>OK</td><td>Requisição bem-sucedida</td></tr>
+                        <tr><td><code>202</code></td><td>Accepted</td><td>Requisição aceita (assíncrona)</td></tr>
+                        <tr><td><code>400</code></td><td>Bad Request</td><td>Requisição inválida</td></tr>
+                        <tr><td><code>404</code></td><td>Not Found</td><td>Recurso não encontrado</td></tr>
+                        <tr><td><code>500</code></td><td>Server Error</td><td>Erro interno do servidor</td></tr>
+                        <tr><td><code>503</code></td><td>Service Unavailable</td><td>Serviço indisponível</td></tr>
                     </tbody>
                 </table>
             </section>
 
-            <!-- Health -->
-            <section id="health" class="doc-section">
-                <h2>Health Check</h2>
+            <!-- ==================== AGENT BLUEPRINT ==================== -->
+            <section id="agent-health" class="doc-section">
+                <h2><i class="fas fa-robot"></i> Agent - Health Check</h2>
                 
                 <div class="endpoint-block">
                     <div class="endpoint-header">
                         <span class="method get">GET</span>
-                        <span class="endpoint-path">/health</span>
+                        <span class="endpoint-path">/api/health</span>
                     </div>
-                    <p>Verifica o status da API e seus componentes.</p>
+                    <p>Verifica o status da API e do pool de conexões do banco de dados.</p>
                     
-                    <h4>Response</h4>
+                    <h4>Response <span class="badge success">200 OK</span></h4>
                     <div class="code-block">
                         <div class="code-header">
-                            <span>200 OK</span>
+                            <span>application/json</span>
                             <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
                         </div>
                         <pre><code class="json">{
   "status": "healthy",
-  "version": "1.0.0",
+  "timestamp": "2025-12-06T10:00:00.000000",
+  "database": {
+    "pool_size": 5,
+    "checked_in": 5,
+    "checked_out": 0,
+    "overflow": 0
+  },
+  "version": "1.0.0"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agent-patient" class="doc-section">
+                <h2><i class="fas fa-user"></i> Agent - Fetch Patient Info</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/fetch_and_set_patient_info</span>
+                    </div>
+                    <p>Busca informações completas do paciente via NetPacsConnector para popular o contexto do agente IA.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>application/json</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="json">{
+  "number_whatsapp": "+5531999999999"
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>application/json</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="json">{
+  "basic_patient_info": {
+    "id": "12345",
+    "name": "João da Silva",
+    "number_whatsapp": "+5531999999999",
+    "patient_social": "João"
+  },
+  "sensive_patient_info": {
+    "sex": "M",
+    "cpf": "12345678900",
+    "rg": "MG1234567",
+    "email": "joao@email.com",
+    "altura": "175",
+    "peso": "70",
+    "birthdate": "1990/05/15"
+  },
+  "accessionNumber": "ACC12345",
+  "protocolo": null,
+  "solicitanteCrm": "123456",
+  "solicitanteEstadoCrm": "SP",
+  "solicitanteWorklist": "Dr. João Silva",
+  "executanteCrm": null,
+  "modality": "MR",
+  "titulo": "RESSONÂNCIA MAGNÉTICA",
+  "studyDateTimeString": null,
+  "convenio": "Particular"
+}</code></pre>
+                    </div>
+
+                    <h4>Errors</h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr><th>Código</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>400</code></td><td>number_whatsapp não fornecido</td></tr>
+                            <tr><td><code>404</code></td><td>Paciente não encontrado</td></tr>
+                            <tr><td><code>500</code></td><td>Erro interno ao buscar dados</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="agent-system-state" class="doc-section">
+                <h2><i class="fas fa-cog"></i> Agent - System State</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/system/state</span>
+                    </div>
+                    <p>Retorna o estado atual do sistema (tokens, limites, status de funcionamento).</p>
+                    
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>application/json</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="json">{
+  "the_system_is_broken": false,
+  "is_email_sent": false,
+  "last_time_checked": "2025-12-06T10:00:00",
+  "tokens_info": {
+    "tokens_used": 15000,
+    "tokens_limit": 100000,
+    "max_tokens_limit": 500000,
+    "users_using": 5,
+    "users_ids": ["user1", "user2", "user3"]
+  }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="endpoint-path">/api/system/state</span>
+                    </div>
+                    <p>Atualiza o estado do sistema (destravar, resetar flags).</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>application/json</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="json">{
+  "the_system_is_broken": false,
+  "is_email_sent": false,
+  "tokens_limit": 100000,
+  "max_tokens_limit": 500000
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agent-tokens" class="doc-section">
+                <h2><i class="fas fa-coins"></i> Agent - Tokens History</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/system/tokens/history</span>
+                    </div>
+                    <p>Retorna histórico de consumo de tokens por dia.</p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr><th>Parâmetro</th><th>Tipo</th><th>Obrigatório</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>date</code></td>
+                                <td>string</td>
+                                <td>Não</td>
+                                <td>Data no formato YYYY-MM-DD (padrão: hoje)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "date": "2025-12-06",
+  "total_records": 25,
+  "records": [
+    {
+      "created_at": "2025-12-06T08:30:00",
+      "user_id": "user_abc123",
+      "tokens_used": 1500
+    }
+  ]
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== WEBHOOKS BLUEPRINT ==================== -->
+            <section id="webhook-twilio" class="doc-section">
+                <h2><i class="fas fa-plug"></i> Webhook - Twilio</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/v1/webhook/twilio</span>
+                    </div>
+                    <p>Recebe mensagens de entrada do WhatsApp via Twilio e encaminha para o agente IA.</p>
+                    
+                    <h4>Request Body <span class="badge">application/x-www-form-urlencoded</span></h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr><th>Campo</th><th>Tipo</th><th>Obrigatório</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>From</code></td><td>string</td><td>Sim</td><td>Número de origem (whatsapp:+5511...)</td></tr>
+                            <tr><td><code>Body</code></td><td>string</td><td>Sim</td><td>Conteúdo da mensagem</td></tr>
+                            <tr><td><code>ProfileName</code></td><td>string</td><td>Não</td><td>Nome do perfil</td></tr>
+                            <tr><td><code>To</code></td><td>string</td><td>Não</td><td>Número do bot</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <p>Retorna status 200 após processar a mensagem e enviar resposta via Twilio.</p>
+                </div>
+            </section>
+
+            <section id="webhook-vonage" class="doc-section">
+                <h2><i class="fas fa-plug"></i> Webhook - Vonage</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/v1/webhook/vonage</span>
+                    </div>
+                    <p>Recebe mensagens de entrada do WhatsApp via Vonage. Inclui deduplicação automática via Redis.</p>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span><strong>Importante:</strong> Vonage envia webhooks em duplicata para redundância. O sistema possui cache Redis/memória para prevenir processamento duplo.</span>
+                    </div>
+
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>application/json</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="json">{
+  "from": "5511999999999",
+  "to": "5511888888888",
+  "message_uuid": "abc123-def456-ghi789",
   "timestamp": "2025-12-06T10:00:00Z",
-  "components": {
-    "database": "connected",
-    "redis": "connected",
-    "whatsapp_api": "connected"
+  "text": "Olá, gostaria de agendar uma consulta"
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <p>Retorna status 200 após processar a mensagem e enviar resposta via Vonage.</p>
+                </div>
+            </section>
+
+            <section id="webhook-vonage-status" class="doc-section">
+                <h2><i class="fas fa-info-circle"></i> Webhook - Vonage Status</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/v1/webhook/vonage/message-status</span>
+                    </div>
+                    <p>Recebe atualizações de status das mensagens enviadas (delivered, failed, etc.).</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "message_uuid": "abc123-def456-ghi789",
+  "to": "5511999999999",
+  "status": "delivered",
+  "error": null,
+  "timestamp": "2025-12-06T10:01:00Z"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== MESSAGES BLUEPRINT ==================== -->
+            <section id="msg-twilio-model" class="doc-section">
+                <h2><i class="fas fa-paper-plane"></i> Messages - Twilio Model</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/v1/messages/twilio/model/message</span>
+                    </div>
+                    <p>Envia mensagem inicial modelada via Twilio Templates (mensagens transacionais).</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "patient_name": "João da Silva"
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">202 Accepted</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "id": "SM1234567890abcdef",
+  "status": "queued",
+  "to": "whatsapp:+5511999999999",
+  "date_created": "2025-12-06 10:00:00"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="msg-twilio-spare" class="doc-section">
+                <h2><i class="fas fa-paper-plane"></i> Messages - Twilio Spare</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/v1/messages/twilio/spare/message</span>
+                    </div>
+                    <p>Endpoint auxiliar para enviar mensagens via Twilio (teste/debug).</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "to": "whatsapp:+5511999999999",
+  "body": "Texto da mensagem de teste"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="msg-vonage-spare" class="doc-section">
+                <h2><i class="fas fa-paper-plane"></i> Messages - Vonage Spare</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/v1/messages/vonage/spare/message</span>
+                    </div>
+                    <p>Envia mensagem via Vonage WhatsApp API.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "user_number": "5511999999999",
+  "to_number": "5511888888888",
+  "body": "Olá, esta é uma mensagem de teste."
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== FALLBACK BLUEPRINT ==================== -->
+            <section id="fallback-transfer" class="doc-section">
+                <h2><i class="fas fa-user-friends"></i> Fallback - Transfer to Human</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/fallback/transferToHuman</span>
+                    </div>
+                    <p>Transfere uma conversa do agente IA para um atendente humano. Cria um ticket na fila de atendimento.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>application/json</span>
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="json">{
+  "number_whatsapp": "+5511999999999",
+  "session_id": "abc123def456",
+  "reason": "Paciente solicitou falar com um humano",
+  "summary": "Conversa sobre reagendamento de consulta",
+  "patient_name": "João da Silva",
+  "patient_id": "123e4567-e89b-12d3-a456-426614174000"
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">202 Accepted</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "accepted",
+  "ticket_id": "HUM-20251206143022-abc123de",
+  "message": "Sua solicitação foi aceita. Um atendente entrará em contato em breve.",
+  "queue_position": 3,
+  "estimated_wait_time": 9,
+  "conversation_context": {
+    "patient_info": {
+      "id": "123e4567...",
+      "name": "João da Silva",
+      "phone": "+5511999999999"
+    },
+    "reason_for_transfer": "Paciente solicitou falar com um humano",
+    "conversation_summary": "Conversa sobre reagendamento"
   }
 }</code></pre>
                     </div>
                 </div>
             </section>
 
-            <!-- Webhook -->
-            <section id="webhook" class="doc-section">
-                <h2>Webhooks</h2>
+            <section id="fallback-ticket" class="doc-section">
+                <h2><i class="fas fa-ticket-alt"></i> Fallback - Ticket Status</h2>
                 
-                <!-- GET Webhook -->
                 <div class="endpoint-block">
                     <div class="endpoint-header">
                         <span class="method get">GET</span>
-                        <span class="endpoint-path">/webhook</span>
+                        <span class="endpoint-path">/fallback/getTicketStatus/{ticket_id}</span>
                     </div>
-                    <p>Endpoint de verificação do webhook pela Meta. Usado durante a configuração inicial.</p>
-                    
-                    <h4>Query Parameters</h4>
-                    <table class="params-table">
-                        <thead>
-                            <tr>
-                                <th>Parâmetro</th>
-                                <th>Tipo</th>
-                                <th>Obrigatório</th>
-                                <th>Descrição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>hub.mode</code></td>
-                                <td>string</td>
-                                <td>Sim</td>
-                                <td>Deve ser "subscribe"</td>
-                            </tr>
-                            <tr>
-                                <td><code>hub.verify_token</code></td>
-                                <td>string</td>
-                                <td>Sim</td>
-                                <td>Token de verificação configurado</td>
-                            </tr>
-                            <tr>
-                                <td><code>hub.challenge</code></td>
-                                <td>string</td>
-                                <td>Sim</td>
-                                <td>Challenge enviado pela Meta</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h4>Response</h4>
-                    <div class="code-block">
-                        <pre><code>200 OK - Retorna o hub.challenge</code></pre>
-                    </div>
-                </div>
-
-                <!-- POST Webhook -->
-                <div class="endpoint-block">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <span class="endpoint-path">/webhook</span>
-                    </div>
-                    <p>Recebe mensagens e eventos do WhatsApp Business API.</p>
-                    
-                    <h4>Request Body</h4>
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span>application/json</span>
-                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
-                        </div>
-                        <pre><code class="json">{
-  "object": "whatsapp_business_account",
-  "entry": [{
-    "id": "WHATSAPP_BUSINESS_ACCOUNT_ID",
-    "changes": [{
-      "value": {
-        "messaging_product": "whatsapp",
-        "metadata": {
-          "display_phone_number": "5511999999999",
-          "phone_number_id": "PHONE_NUMBER_ID"
-        },
-        "contacts": [{
-          "profile": { "name": "João Silva" },
-          "wa_id": "5511988888888"
-        }],
-        "messages": [{
-          "from": "5511988888888",
-          "id": "wamid.xxx",
-          "timestamp": "1701864000",
-          "type": "text",
-          "text": { "body": "Olá, gostaria de agendar uma consulta" }
-        }]
-      },
-      "field": "messages"
-    }]
-  }]
-}</code></pre>
-                    </div>
-
-                    <h4>Response</h4>
-                    <div class="code-block">
-                        <pre><code class="json">{ "status": "received" }</code></pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Patients -->
-            <section id="patients" class="doc-section">
-                <h2>Patients</h2>
-                
-                <!-- GET Patients -->
-                <div class="endpoint-block">
-                    <div class="endpoint-header">
-                        <span class="method get">GET</span>
-                        <span class="endpoint-path">/api/patients</span>
-                    </div>
-                    <p>Lista todos os pacientes cadastrados.</p>
-                    
-                    <h4>Query Parameters</h4>
-                    <table class="params-table">
-                        <thead>
-                            <tr>
-                                <th>Parâmetro</th>
-                                <th>Tipo</th>
-                                <th>Obrigatório</th>
-                                <th>Descrição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>page</code></td>
-                                <td>integer</td>
-                                <td>Não</td>
-                                <td>Página (default: 1)</td>
-                            </tr>
-                            <tr>
-                                <td><code>limit</code></td>
-                                <td>integer</td>
-                                <td>Não</td>
-                                <td>Itens por página (default: 20)</td>
-                            </tr>
-                            <tr>
-                                <td><code>phone</code></td>
-                                <td>string</td>
-                                <td>Não</td>
-                                <td>Filtrar por telefone</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- POST Patient -->
-                <div class="endpoint-block">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <span class="endpoint-path">/api/patients</span>
-                    </div>
-                    <p>Cria ou atualiza um paciente.</p>
-                    
-                    <h4>Request Body</h4>
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span>application/json</span>
-                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
-                        </div>
-                        <pre><code class="json">{
-  "name": "João Silva",
-  "phone": "5511988888888",
-  "cpf": "12345678900",
-  "email": "joao@email.com",
-  "birth_date": "1990-05-15",
-  "convenio_id": 1
-}</code></pre>
-                    </div>
-
-                    <h4>Response</h4>
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span>201 Created</span>
-                        </div>
-                        <pre><code class="json">{
-  "id": 123,
-  "name": "João Silva",
-  "phone": "5511988888888",
-  "cpf": "12345678900",
-  "email": "joao@email.com",
-  "birth_date": "1990-05-15",
-  "convenio_id": 1,
-  "created_at": "2025-12-06T10:00:00Z"
-}</code></pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Appointments -->
-            <section id="appointments" class="doc-section">
-                <h2>Appointments</h2>
-                
-                <!-- GET Appointments -->
-                <div class="endpoint-block">
-                    <div class="endpoint-header">
-                        <span class="method get">GET</span>
-                        <span class="endpoint-path">/api/appointments</span>
-                    </div>
-                    <p>Lista agendamentos com filtros opcionais.</p>
-                    
-                    <h4>Query Parameters</h4>
-                    <table class="params-table">
-                        <thead>
-                            <tr>
-                                <th>Parâmetro</th>
-                                <th>Tipo</th>
-                                <th>Obrigatório</th>
-                                <th>Descrição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>patient_id</code></td>
-                                <td>integer</td>
-                                <td>Não</td>
-                                <td>Filtrar por paciente</td>
-                            </tr>
-                            <tr>
-                                <td><code>doctor_id</code></td>
-                                <td>integer</td>
-                                <td>Não</td>
-                                <td>Filtrar por médico</td>
-                            </tr>
-                            <tr>
-                                <td><code>date_from</code></td>
-                                <td>date</td>
-                                <td>Não</td>
-                                <td>Data inicial (YYYY-MM-DD)</td>
-                            </tr>
-                            <tr>
-                                <td><code>date_to</code></td>
-                                <td>date</td>
-                                <td>Não</td>
-                                <td>Data final (YYYY-MM-DD)</td>
-                            </tr>
-                            <tr>
-                                <td><code>status</code></td>
-                                <td>string</td>
-                                <td>Não</td>
-                                <td>scheduled, confirmed, cancelled, completed</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- POST Appointment -->
-                <div class="endpoint-block">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <span class="endpoint-path">/api/appointments</span>
-                    </div>
-                    <p>Cria um novo agendamento.</p>
-                    
-                    <h4>Request Body</h4>
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span>application/json</span>
-                            <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
-                        </div>
-                        <pre><code class="json">{
-  "patient_id": 123,
-  "doctor_id": 45,
-  "specialty_id": 3,
-  "date": "2025-12-10",
-  "time": "14:30",
-  "type": "consultation",
-  "notes": "Primeira consulta"
-}</code></pre>
-                    </div>
-
-                    <h4>Response</h4>
-                    <div class="code-block">
-                        <div class="code-header">
-                            <span>201 Created</span>
-                        </div>
-                        <pre><code class="json">{
-  "id": 456,
-  "patient_id": 123,
-  "doctor_id": 45,
-  "specialty_id": 3,
-  "date": "2025-12-10",
-  "time": "14:30",
-  "type": "consultation",
-  "status": "scheduled",
-  "confirmation_code": "AGD-2025-456",
-  "created_at": "2025-12-06T10:00:00Z"
-}</code></pre>
-                    </div>
-                </div>
-
-                <!-- DELETE Appointment -->
-                <div class="endpoint-block">
-                    <div class="endpoint-header">
-                        <span class="method delete">DELETE</span>
-                        <span class="endpoint-path">/api/appointments/{id}</span>
-                    </div>
-                    <p>Cancela um agendamento existente.</p>
+                    <p>Obtém o status atual de um ticket de transferência.</p>
                     
                     <h4>Path Parameters</h4>
                     <table class="params-table">
                         <thead>
-                            <tr>
-                                <th>Parâmetro</th>
-                                <th>Tipo</th>
-                                <th>Descrição</th>
-                            </tr>
+                            <tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th></tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><code>id</code></td>
-                                <td>integer</td>
-                                <td>ID do agendamento</td>
-                            </tr>
+                            <tr><td><code>ticket_id</code></td><td>string</td><td>ID do ticket (ex: HUM-20251206143022-abc123de)</td></tr>
                         </tbody>
                     </table>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "ticket_id": "HUM-20251206143022-abc123de",
+  "status": "waiting",
+  "position_in_queue": 2,
+  "estimated_wait_time": 6,
+  "actual_wait_time_seconds": 180,
+  "created_at": "2025-12-06T14:30:22",
+  "started_at": null,
+  "reason": "Paciente solicitou falar com um humano",
+  "message": "Você está na posição 2 da fila. Tempo estimado: 6 minutos."
+}</code></pre>
+                    </div>
                 </div>
             </section>
 
-            <!-- Doctors -->
-            <section id="doctors" class="doc-section">
-                <h2>Doctors</h2>
+            <section id="fallback-queue" class="doc-section">
+                <h2><i class="fas fa-list-ol"></i> Fallback - Queue Status</h2>
                 
                 <div class="endpoint-block">
                     <div class="endpoint-header">
                         <span class="method get">GET</span>
-                        <span class="endpoint-path">/api/doctors</span>
+                        <span class="endpoint-path">/fallback/queue/status</span>
                     </div>
-                    <p>Lista médicos disponíveis.</p>
+                    <p>Obtém o status geral da fila de atendimento humano.</p>
                     
-                    <h4>Query Parameters</h4>
-                    <table class="params-table">
-                        <thead>
-                            <tr>
-                                <th>Parâmetro</th>
-                                <th>Tipo</th>
-                                <th>Obrigatório</th>
-                                <th>Descrição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>specialty_id</code></td>
-                                <td>integer</td>
-                                <td>Não</td>
-                                <td>Filtrar por especialidade</td>
-                            </tr>
-                            <tr>
-                                <td><code>convenio_id</code></td>
-                                <td>integer</td>
-                                <td>Não</td>
-                                <td>Filtrar por convênio aceito</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "total_tickets": 50,
+  "active_agents": 3,
+  "average_wait_time": 300,
+  "tickets_waiting": 5,
+  "tickets_in_progress": 3,
+  "tickets_resolved": 42,
+  "server_time": "2025-12-06T14:35:00"
+}</code></pre>
+                    </div>
                 </div>
+            </section>
 
+            <section id="fallback-acknowledge" class="doc-section">
+                <h2><i class="fas fa-check-circle"></i> Fallback - Acknowledge Transfer</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/fallback/acknowledgeTransfer</span>
+                    </div>
+                    <p>Confirma que um atendente humano iniciou o atendimento.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "ticket_id": "HUM-20251206143022-abc123de",
+  "agent_name": "Maria Silva",
+  "agent_id": "agent_123"
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "message": "Atendimento iniciado por Maria Silva",
+  "ticket_id": "HUM-20251206143022-abc123de",
+  "agent_name": "Maria Silva",
+  "started_at": "2025-12-06T14:35:00"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fallback-close" class="doc-section">
+                <h2><i class="fas fa-times-circle"></i> Fallback - Close Ticket</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/fallback/closeTicket</span>
+                    </div>
+                    <p>Encerra um ticket de atendimento humano.</p>
+                    
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "ticket_id": "HUM-20251206143022-abc123de",
+  "resolution": "Agendamento realizado com sucesso",
+  "agent_id": "agent_123"
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "message": "Ticket encerrado com sucesso",
+  "ticket_id": "HUM-20251206143022-abc123de",
+  "resolution": "Agendamento realizado com sucesso",
+  "closed_at": "2025-12-06T14:45:00"
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fallback-agent-stats" class="doc-section">
+                <h2><i class="fas fa-chart-bar"></i> Fallback - Agent Stats</h2>
+                
                 <div class="endpoint-block">
                     <div class="endpoint-header">
                         <span class="method get">GET</span>
-                        <span class="endpoint-path">/api/doctors/{id}/availability</span>
+                        <span class="endpoint-path">/fallback/agent/{agent_id}/stats</span>
                     </div>
-                    <p>Retorna horários disponíveis de um médico.</p>
+                    <p>Obtém estatísticas de um agente específico.</p>
                     
-                    <h4>Query Parameters</h4>
-                    <table class="params-table">
-                        <thead>
-                            <tr>
-                                <th>Parâmetro</th>
-                                <th>Tipo</th>
-                                <th>Obrigatório</th>
-                                <th>Descrição</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>date</code></td>
-                                <td>date</td>
-                                <td>Sim</td>
-                                <td>Data para verificar (YYYY-MM-DD)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h4>Response</h4>
+                    <h4>Response <span class="badge success">200 OK</span></h4>
                     <div class="code-block">
                         <pre><code class="json">{
-  "doctor_id": 45,
-  "date": "2025-12-10",
-  "available_slots": [
-    "08:00", "08:30", "09:00", "09:30",
-    "14:00", "14:30", "15:00", "15:30"
+  "agent_id": "agent_123",
+  "agent_name": "Maria Silva",
+  "total_tickets": 150,
+  "tickets_resolved": 145,
+  "average_resolution_time": 420,
+  "current_active_tickets": 2
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== RAG BLUEPRINT ==================== -->
+            <section id="rag-health" class="doc-section">
+                <h2><i class="fas fa-brain"></i> RAG - Health Check</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/rag/health</span>
+                    </div>
+                    <p>Verifica saúde do sistema RAG (Retrieval-Augmented Generation).</p>
+                    
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "healthy",
+  "message": "Sistema RAG operacional",
+  "chroma_db": "connected",
+  "documents_indexed": 25
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="rag-stats" class="doc-section">
+                <h2><i class="fas fa-chart-pie"></i> RAG - Stats</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/rag/stats</span>
+                    </div>
+                    <p>Retorna estatísticas do sistema RAG.</p>
+                    
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "total_documents": 25,
+  "total_chunks": 450,
+  "total_size_mb": 2.5,
+  "collection_name": "whatsapp_medic_docs",
+  "embedding_model": "text-embedding-ada-002",
+  "max_files": 100,
+  "chunk_size": 1000,
+  "chunk_overlap": 200,
+  "documents_by_type": {
+    ".md": 15,
+    ".txt": 5,
+    ".py": 5
+  },
+  "top_documents": [
+    {"file": "docs/api.md", "chunks": 45, "size_kb": 120}
   ]
 }</code></pre>
                     </div>
                 </div>
             </section>
 
-            <!-- Convenios -->
-            <section id="convenios" class="doc-section">
-                <h2>Convênios</h2>
+            <section id="rag-documents" class="doc-section">
+                <h2><i class="fas fa-file-alt"></i> RAG - Documents</h2>
                 
                 <div class="endpoint-block">
                     <div class="endpoint-header">
                         <span class="method get">GET</span>
-                        <span class="endpoint-path">/api/convenios</span>
+                        <span class="endpoint-path">/api/rag/documents</span>
                     </div>
-                    <p>Lista todos os convênios aceitos.</p>
+                    <p>Lista todos os documentos indexados no sistema RAG.</p>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/rag/documents</span>
+                    </div>
+                    <p>Upload e indexação de novo documento.</p>
                     
-                    <h4>Response</h4>
+                    <h4>Request <span class="badge">multipart/form-data</span></h4>
+                    <table class="params-table">
+                        <thead>
+                            <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>file</code></td><td>file</td><td>Arquivo (.md, .txt, .py, .json, .yaml)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method delete">DELETE</span>
+                        <span class="endpoint-path">/api/rag/documents/{doc_id}</span>
+                    </div>
+                    <p>Remove documento do índice RAG.</p>
+                </div>
+            </section>
+
+            <section id="rag-search" class="doc-section">
+                <h2><i class="fas fa-search"></i> RAG - Search</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/rag/search</span>
+                    </div>
+                    <p>Busca contexto relevante na documentação usando embeddings.</p>
+                    
+                    <h4>Request Body</h4>
                     <div class="code-block">
                         <pre><code class="json">{
-  "convenios": [
-    { "id": 1, "name": "Unimed", "code": "UNI" },
-    { "id": 2, "name": "Bradesco Saúde", "code": "BRA" },
-    { "id": 3, "name": "SulAmérica", "code": "SUL" },
-    { "id": 4, "name": "Particular", "code": "PAR" }
+  "query": "Como agendar uma consulta?",
+  "k": 5
+}</code></pre>
+                    </div>
+
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "query": "Como agendar uma consulta?",
+  "total_results": 5,
+  "context": "Texto concatenado dos chunks mais relevantes...",
+  "results": [
+    {
+      "rank": 1,
+      "content": "Para agendar uma consulta, basta enviar...",
+      "source": "docs/guia_agendamento.md",
+      "distance": 0.15,
+      "similarity": 0.85
+    }
   ]
 }</code></pre>
                     </div>
+                </div>
+            </section>
+
+            <section id="rag-index" class="doc-section">
+                <h2><i class="fas fa-database"></i> RAG - Indexing</h2>
+                
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/rag/index</span>
+                    </div>
+                    <p>Dispara indexação manual de todos os arquivos do diretório docs/ de forma assíncrona.</p>
+                    
+                    <h4>Response <span class="badge success">202 Accepted</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "message": "Indexação iniciada em background",
+  "started_at": "2025-12-06T10:00:00",
+  "info": "Use GET /api/rag/index/status para acompanhar o progresso"
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api/rag/index/status</span>
+                    </div>
+                    <p>Retorna status da indexação assíncrona.</p>
+                    
+                    <h4>Response <span class="badge success">200 OK</span></h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "indexing": {
+    "is_running": false,
+    "started_at": "2025-12-06T10:00:00",
+    "completed_at": "2025-12-06T10:02:30",
+    "status": "completed",
+    "message": "Indexação concluída com sucesso",
+    "stats": {
+      "total_documents": 25,
+      "total_chunks": 450
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="endpoint-path">/api/rag/monitor/index-existing</span>
+                    </div>
+                    <p>Indexa todos os arquivos existentes no diretório monitorado.</p>
                 </div>
             </section>
 
