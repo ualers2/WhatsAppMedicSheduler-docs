@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhooks - WhatsApp Medic Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp Medic Scheduler</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="api.html">API Reference</a></li>
+            <li><a href="webhooks.html" class="active">Webhooks</a></li>
+            <li><a href="setup.html">Setup</a></li>
+            <li><a href="https://github.com/ualers2/WhatsAppMedicSheduler" target="_blank"><i class="fab fa-github"></i></a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1><i class="fas fa-plug"></i> Webhooks</h1>
+        <p>Guia completo de integração com WhatsApp Business API</p>
+    </header>
+
+    <!-- Main Content -->
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-section">
+                <h4>Webhooks</h4>
+                <ul>
+                    <li><a href="#overview">Visão Geral</a></li>
+                    <li><a href="#setup">Configuração</a></li>
+                    <li><a href="#verification">Verificação</a></li>
+                    <li><a href="#events">Tipos de Eventos</a></li>
+                    <li><a href="#security">Segurança</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Eventos</h4>
+                <ul>
+                    <li><a href="#message-text">Mensagem de Texto</a></li>
+                    <li><a href="#message-media">Mensagem de Mídia</a></li>
+                    <li><a href="#message-location">Localização</a></li>
+                    <li><a href="#message-button">Resposta de Botão</a></li>
+                    <li><a href="#status">Status de Mensagem</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="docs-content">
+            <!-- Overview -->
+            <section id="overview" class="doc-section">
+                <h2>Visão Geral</h2>
+                <p>Os webhooks permitem que o WhatsApp Business API envie notificações em tempo real para sua aplicação quando eventos ocorrem, como recebimento de mensagens ou atualizações de status.</p>
+                
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="flow-icon"><i class="fab fa-whatsapp"></i></div>
+                        <span>Usuário envia mensagem</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="flow-step">
+                        <div class="flow-icon"><i class="fab fa-meta"></i></div>
+                        <span>Meta processa</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="flow-step">
+                        <div class="flow-icon"><i class="fas fa-server"></i></div>
+                        <span>Webhook recebe</span>
+                    </div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="flow-step">
+                        <div class="flow-icon"><i class="fas fa-brain"></i></div>
+                        <span>IA processa</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Setup -->
+            <section id="setup" class="doc-section">
+                <h2>Configuração do Webhook</h2>
+                
+                <h3>1. Meta Business Suite</h3>
+                <ol class="setup-steps">
+                    <li>Acesse <a href="https://business.facebook.com" target="_blank">Meta Business Suite</a></li>
+                    <li>Vá em <strong>WhatsApp > Configuração > Webhooks</strong></li>
+                    <li>Clique em <strong>Configurar</strong></li>
+                    <li>Insira a URL do seu webhook e o token de verificação</li>
+                </ol>
+
+                <h3>2. Variáveis de Ambiente</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>.env</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code># WhatsApp Business API
+WHATSAPP_VERIFY_TOKEN=seu_token_de_verificacao_secreto
+WHATSAPP_ACCESS_TOKEN=seu_access_token_da_meta
+WHATSAPP_PHONE_NUMBER_ID=seu_phone_number_id
+WHATSAPP_BUSINESS_ACCOUNT_ID=seu_business_account_id
+
+# Webhook URL (para referência)
+WEBHOOK_URL=https://seu-dominio.com/webhook</code></pre>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span><strong>Importante:</strong> Nunca exponha seus tokens em repositórios públicos!</span>
+                </div>
+            </section>
+
+            <!-- Verification -->
+            <section id="verification" class="doc-section">
+                <h2>Verificação do Webhook</h2>
+                <p>Quando você configura o webhook na Meta, eles enviam uma requisição GET para verificar a propriedade do endpoint.</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Requisição de Verificação (GET)</span>
+                    </div>
+                    <pre><code>GET /webhook?hub.mode=subscribe&hub.verify_token=SEU_TOKEN&hub.challenge=CHALLENGE_STRING</code></pre>
+                </div>
+
+                <h3>Implementação</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Python (Flask)</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code class="python">@app.route('/webhook', methods=['GET'])
+def verify_webhook():
+    mode = request.args.get('hub.mode')
+    token = request.args.get('hub.verify_token')
+    challenge = request.args.get('hub.challenge')
+    
+    if mode == 'subscribe' and token == VERIFY_TOKEN:
+        return challenge, 200
+    
+    return 'Forbidden', 403</code></pre>
+                </div>
+            </section>
+
+            <!-- Events -->
+            <section id="events" class="doc-section">
+                <h2>Tipos de Eventos</h2>
+                
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo de Evento</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>messages</code></td>
+                            <td>Mensagens Recebidas</td>
+                            <td>Texto, mídia, localização, contatos</td>
+                        </tr>
+                        <tr>
+                            <td><code>statuses</code></td>
+                            <td>Status de Mensagem</td>
+                            <td>sent, delivered, read, failed</td>
+                        </tr>
+                        <tr>
+                            <td><code>errors</code></td>
+                            <td>Erros</td>
+                            <td>Erros de envio ou processamento</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Message Text -->
+            <section id="message-text" class="doc-section">
+                <h2>Mensagem de Texto</h2>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Payload de Mensagem de Texto</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code class="json">{
+  "object": "whatsapp_business_account",
+  "entry": [{
+    "id": "BUSINESS_ACCOUNT_ID",
+    "changes": [{
+      "value": {
+        "messaging_product": "whatsapp",
+        "metadata": {
+          "display_phone_number": "5511999999999",
+          "phone_number_id": "PHONE_NUMBER_ID"
+        },
+        "contacts": [{
+          "profile": { "name": "João Silva" },
+          "wa_id": "5511988888888"
+        }],
+        "messages": [{
+          "from": "5511988888888",
+          "id": "wamid.HBgNNTUxMTk4...",
+          "timestamp": "1701864000",
+          "type": "text",
+          "text": {
+            "body": "Olá, gostaria de agendar uma consulta"
+          }
+        }]
+      },
+      "field": "messages"
+    }]
+  }]
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Message Button -->
+            <section id="message-button" class="doc-section">
+                <h2>Resposta de Botão Interativo</h2>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Payload de Resposta de Botão</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code class="json">{
+  "messages": [{
+    "from": "5511988888888",
+    "id": "wamid.xxx",
+    "timestamp": "1701864000",
+    "type": "interactive",
+    "interactive": {
+      "type": "button_reply",
+      "button_reply": {
+        "id": "confirm_appointment",
+        "title": "Confirmar Agendamento"
+      }
+    }
+  }]
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Status -->
+            <section id="status" class="doc-section">
+                <h2>Status de Mensagem</h2>
+                
+                <div class="status-flow">
+                    <div class="status-item sent">
+                        <i class="fas fa-check"></i>
+                        <span>sent</span>
+                        <small>Enviada ao servidor</small>
+                    </div>
+                    <div class="status-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="status-item delivered">
+                        <i class="fas fa-check-double"></i>
+                        <span>delivered</span>
+                        <small>Entregue ao dispositivo</small>
+                    </div>
+                    <div class="status-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="status-item read">
+                        <i class="fas fa-check-double" style="color: #53bdeb;"></i>
+                        <span>read</span>
+                        <small>Lida pelo usuário</small>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Payload de Status</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code class="json">{
+  "entry": [{
+    "changes": [{
+      "value": {
+        "statuses": [{
+          "id": "wamid.xxx",
+          "status": "delivered",
+          "timestamp": "1701864100",
+          "recipient_id": "5511988888888"
+        }]
+      }
+    }]
+  }]
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Security -->
+            <section id="security" class="doc-section">
+                <h2>Segurança</h2>
+                
+                <h3>Validação de Assinatura</h3>
+                <p>A Meta assina todas as requisições de webhook com um header <code>X-Hub-Signature-256</code>. Sempre valide esta assinatura:</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>Python - Validação de Assinatura</span>
+                        <button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <pre><code class="python">import hmac
+import hashlib
+
+def verify_signature(payload, signature, app_secret):
+    """Verifica a assinatura do webhook da Meta"""
+    expected = hmac.new(
+        app_secret.encode('utf-8'),
+        payload,
+        hashlib.sha256
+    ).hexdigest()
+    
+    return hmac.compare_digest(f'sha256={expected}', signature)</code></pre>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <span><strong>Boas Práticas:</strong></span>
+                    <ul>
+                        <li>Sempre valide a assinatura antes de processar</li>
+                        <li>Use HTTPS para seu endpoint</li>
+                        <li>Implemente rate limiting</li>
+                        <li>Mantenha logs de auditoria</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-bottom">
+            <p>&copy; 2025 WhatsApp Medic Scheduler. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
