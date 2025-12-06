@@ -1,5 +1,22 @@
 // WhatsApp Medic Scheduler - Documentation JS
 
+// Load nav-links from includes folder
+async function loadNavLinks() {
+    try {
+        const response = await fetch('includes/nav-links.html');
+        const navLinksHTML = await response.text();
+        const navLinksContainer = document.getElementById('navLinks');
+        
+        if (navLinksContainer) {
+            navLinksContainer.innerHTML = navLinksHTML;
+            // After loading, set active link
+            setActiveNavLink();
+        }
+    } catch (error) {
+        console.error('Failed to load nav-links:', error);
+    }
+}
+
 // Highlight active navbar link based on current page
 function setActiveNavLink() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -39,8 +56,8 @@ function copyCode(button) {
 
 // Smooth scroll for anchor links
 document.addEventListener('DOMContentLoaded', () => {
-    // Set active nav link on page load
-    setActiveNavLink();
+    // Load nav-links from includes folder first
+    loadNavLinks();
     // Add smooth scroll to all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
