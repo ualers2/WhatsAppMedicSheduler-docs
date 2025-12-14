@@ -156,11 +156,59 @@
             overflow-x: auto;
             margin: 1rem 0;
             border: 1px solid var(--border-color);
+            position: relative;
+        }
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(125, 211, 252, 0.2);
+        }
+        .code-block-language {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .code-copy-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .code-copy-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+        }
+        .code-copy-btn.copied {
+            background: #10b981;
+        }
+        .code-copy-btn i {
+            font-size: 0.9rem;
         }
         .code-block code {
             font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.9rem;
             color: #7dd3fc;
+            display: block;
+            white-space: pre;
+            word-break: break-word;
+        }
+        .code-block pre {
+            margin: 0;
+            padding: 0;
         }
         .inline-code {
             background: var(--bg-hover);
@@ -349,10 +397,13 @@
                 <li><a href="#servicos"><i class="fas fa-server"></i> Serviços e Portas</a></li>
                 <li><a href="#databases"><i class="fas fa-database"></i> Bancos de Dados</a></li>
                 <li><a href="#variaveis"><i class="fas fa-key"></i> Variáveis Ambiente</a></li>
+                <li><a href="#backend-estrutura"><i class="fas fa-code"></i> Backend - Estrutura</a></li>
+                <li><a href="#agent-ia"><i class="fas fa-robot"></i> Agent IA & Tools</a></li>
+                <li><a href="#rag"><i class="fas fa-search"></i> RAG & ChromaDB</a></li>
                 <li><a href="#healthcheck"><i class="fas fa-heartbeat"></i> Health Checks</a></li>
-                <li><a href="#troubleshooting"><i class="fas fa-bug"></i> Troubleshooting</a></li>
                 <li><a href="#operacoes"><i class="fas fa-tools"></i> Operações Comuns</a></li>
                 <li><a href="#monitoramento"><i class="fas fa-chart-line"></i> Monitoramento</a></li>
+                <li><a href="#troubleshooting"><i class="fas fa-bug"></i> Troubleshooting</a></li>
             </ul>
         </aside>
 
@@ -383,6 +434,9 @@
                         <li><strong>Docker Compose 2.x</strong> - Orquestração</li>
                         <li><strong>Git</strong> - Controle de versão</li>
                         <li><strong>curl</strong> - Testes de API</li>
+                        <li><strong>PostgreSQL client</strong> - psql (opcional)</li>
+                        <li><strong>MongoDB client</strong> - mongosh (opcional)</li>
+                        <li><strong>Redis CLI</strong> - redis-cli (opcional)</li>
                     </ul>
                 </div>
 
@@ -392,32 +446,60 @@
                         <h3>Credenciais Necessárias</h3>
                     </div>
                     <ul class="checklist">
-                        <li><strong>OpenAI API Key</strong> - Agente de IA</li>
+                        <li><strong>OpenAI API Key</strong> - Agent IA (gpt-4o)</li>
                         <li><strong>Vonage/Twilio</strong> - WhatsApp API</li>
-                        <li><strong>AgentOps Key</strong> - Monitoramento (opcional)</li>
-                        <li><strong>SMTP</strong> - Notificações por email</li>
+                        <li><strong>AgentOps Key</strong> - Monitoramento agent</li>
+                        <li><strong>SMTP Server</strong> - Notificações email</li>
+                        <li><strong>Chroma API Key</strong> - Vector DB (opcional)</li>
+                        <li><strong>GitHub Token</strong> - Private repos (opcional)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Requisitos de Recursos</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4><i class="fas fa-memory"></i> Computador Mínimo</h4>
+                    <ul>
+                        <li><strong>CPU:</strong> 4 cores (8 recomendado)</li>
+                        <li><strong>RAM:</strong> 8GB (12GB+ recomendado)</li>
+                        <li><strong>Disco:</strong> 20GB (SSD)</li>
+                        <li><strong>Rede:</strong> Conexão estável</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4><i class="fas fa-docker"></i> Docker Compose Resources</h4>
+                    <ul>
+                        <li><strong>API Principal:</strong> 800MB RAM, 1.25 CPU</li>
+                        <li><strong>Webhooks:</strong> 800MB RAM, 0.80 CPU</li>
+                        <li><strong>Mock Gateway:</strong> 800MB RAM, 1.25 CPU</li>
+                        <li><strong>DBs + Cache:</strong> ~2GB RAM</li>
                     </ul>
                 </div>
             </div>
 
             <h3>Verificar Instalações</h3>
-            <div class="code-block"><code># Python
+            <div class="code-block"><code># Python (3.11+)
 python --version
-# Esperado: Python 3.11.x
 
-# Docker
+# Docker (24.x)
 docker --version
-# Esperado: Docker version 24.x.x
 
-# Docker Compose
+# Docker Compose (2.x)
 docker compose version
-# Esperado: Docker Compose version v2.x.x
 
 # Git
-git --version</code></div>
+git --version
+
+# Curl
+curl --version</code></div>
 
             <div class="alert alert-info">
-                <strong>💡 Dica:</strong> No Windows, recomendamos usar WSL2 com Docker Desktop para melhor performance.
+                <strong>💡 Dica Windows:</strong> Usar WSL2 com Docker Desktop para melhor performance. Configure WSL2 como backend padrão do Docker.
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Nota:</strong> Certifique-se que suas credenciais de API estão seguras. Nunca faça commit de .env files no repositório.
             </div>
         </section>
 
@@ -425,82 +507,134 @@ git --version</code></div>
         <section id="arquitetura" class="section">
             <h2>2. Arquitetura do Sistema</h2>
 
-            <div class="architecture-diagram">┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           WhatsApp Medic Scheduler                               │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                  │
-│   ┌──────────────┐     ┌──────────────────────────────────────────────────┐     │
-│   │   WhatsApp   │     │                BACKEND (Flask/ASGI)              │     │
-│   │   (Vonage/   │────▶│  ┌─────────────────┐  ┌─────────────────────┐   │     │
-│   │   Twilio)    │     │  │  webhooks.py    │  │      api.py         │   │     │
-│   └──────────────┘     │  │  Port: 3004     │  │     Port: 3000      │   │     │
-│                        │  │  • /twilio      │  │  • /messages        │   │     │
-│                        │  │  • /vonage      │  │  • /agent           │   │     │
-│                        │  └────────┬────────┘  │  • /fallback        │   │     │
-│                        │           │           │  • /rag             │   │     │
-│                        │           └───────────┴──────────┬──────────┘   │     │
-│                        │                      ▼           │              │     │
-│                        │           ┌─────────────────────┐│              │     │
-│                        │           │   Agent IA (GPT-4)  ││              │     │
-│                        │           │   + Guardrails      ││              │     │
-│                        │           │   + Tools           ││              │     │
-│                        │           └─────────────────────┘│              │     │
-│                        └──────────────────────────────────┼──────────────┘     │
-│                                                           │                     │
-│   ┌───────────────────────────────────────────────────────┼─────────────────┐  │
-│   │                        INFRAESTRUTURA                 │                 │  │
-│   │                                          ▼            │                 │  │
-│   │  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐               │  │
-│   │  │  PostgreSQL   │  │    MongoDB    │  │     Redis     │               │  │
-│   │  │  Port: 5122   │  │  Port: 29017  │  │  Port: 6319   │               │  │
-│   │  │  • Pacientes  │  │  • Auditoria  │  │  • Cache      │               │  │
-│   │  │  • Schedules  │  │  • Logs       │  │  • Dedup      │               │  │
-│   │  └───────────────┘  └───────────────┘  └───────────────┘               │  │
-│   │                                                                         │  │
-│   │  ┌─────────────────────────────┐  ┌─────────────────────────────┐      │  │
-│   │  │  Net Mock API Gateway       │  │       PgAdmin               │      │  │
-│   │  │  Port: 5001                 │  │      Port: 5050             │      │  │
-│   │  └─────────────────────────────┘  └─────────────────────────────┘      │  │
-│   └─────────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────────┘</div>
+            <div class="architecture-diagram">┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                WhatsApp Medic Scheduler - Arquitetura Final                    │
+├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                  │
+│  ┌──────────────────────────────────────┐  ┌──────────────────────────────────────────────┐   │
+│  │       WhatsApp Provedores             │  │           Backend Services (Flask/FastAPI)  │   │
+│  ├──────────────────────────────────────┤  ├──────────────────────────────────────────────┤   │
+│  │  • Vonage (WhatsApp Business API)    │  │  ┌─────────────────────────────────────────┐│   │
+│  │  • Twilio WhatsApp Cloud             │  │  │  webhooks.py (Port: 3004)              ││   │
+│  │  └──────────────┬─────────────────┘  │  │  │  • /twilio/message (Webhook)           ││   │
+│  │                │ Webhooks            │  │  │  • /vonage (Webhook)                   ││   │
+│  │  ┌─────────────▼──────────────────┐  │  │  │  • /vonage/message-status (Eventos)    ││   │
+│  │  │ Inbound Messages               │  │  │  └─────────┬──────────────────────────────┘│   │
+│  │  │ (JSON → Processing)            │  │  │            │                              │   │
+│  │  └─────────────┬──────────────────┘  │  │  ┌─────────▼────────────────────────────┐ │   │
+│  └────────────────┼─────────────────────┘  │  │  api.py (Port: 3000)                 │ │   │
+│                   │                        │  │  ┌─────────────────────────────────┐  │ │   │
+│                   │                        │  │  │ Main Blueprints:                │  │ │   │
+│                   │                        │  │  │ • /agent/process → AI Agent     │  │ │   │
+│                   │                        │  │  │ • /messages → Message mgmt      │  │ │   │
+│                   │                        │  │  │ • /fallback → System Breakdown  │  │ │   │
+│                   │                        │  │  │ • /rag → Vector search & docs   │  │ │   │
+│                   │                        │  │  └──────────────┬─────────────────┘  │ │   │
+│                   │                        │  │                 │                    │ │   │
+│                   │                        │  │  ┌──────────────▼────────────────┐  │ │   │
+│                   │                        │  │  │  Agent IA (OpenAI Agents)     │  │ │   │
+│                   │                        │  │  │  ├─ Model: gpt-4o             │  │ │   │
+│                   │                        │  │  │  ├─ Input Guardrails          │  │ │   │
+│                   │                        │  │  │  ├─ Output Guardrails         │  │ │   │
+│                   │                        │  │  │  └─ 12+ Tools (Search Slots,  │  │ │   │
+│                   │                        │  │  │     OpenBooking, etc...)      │  │ │   │
+│                   │                        │  │  └───────────────────────────────┘  │ │   │
+│                   │                        │  └────────────────────────────────────┘ │   │
+│                   │                        │                                         │   │
+│  ┌────────────────┼─────────────────────┐  │  ┌──────────────────────────────────┐  │   │
+│  │ Data & Storage │                     │  │  │  Mock API Gateway (Port: 5001)   │  │   │
+│  ├────────────────┼─────────────────────┤  │  │  ├─ Simula: AnimatiPACS         │  │   │
+│  │                │                     │  │  │  ├─ 15+ Endpoints                │  │   │
+│  │  PostgreSQL    │  ┌─────────────────┐│  │  │  └─ Seed: Convenios, Medicos    │  │   │
+│  │  (Port: 5122)  │  │ Stored: Patients││  │  └──────────────────────────────────┘  │   │
+│  │  15+           │  │ - Appointments  ││  │                                         │   │
+│  │  tables        │  │ - Agendamentos  ││  │  ┌──────────────────────────────────┐  │   │
+│  │                │  │ - Queue Status  ││  │  │  ChromaDB + Vector Search       │  │   │
+│  │  ├─ Threads    │  │ - Fallback Data ││  │  │  ├─ Embedding: OpenAI           │  │   │
+│  │  ├─ Sessions   │  └─────────────────┘│  │  │  ├─ Collections per dept        │  │   │
+│  │  └─ Bookings   │                     │  │  │  └─ Context retrieval (RAG)     │  │   │
+│  │                │                     │  │  └──────────────────────────────────┘  │   │
+│  │  MongoDB       │  ┌─────────────────┐│  │                                         │   │
+│  │  (Port: 29017) │  │ Stored: Audit   ││  │  ┌──────────────────────────────────┐  │   │
+│  │  ├─ Audit Logs │  │ - Conversation  ││  │  │  Redis Cache (Port: 6319)       │  │   │
+│  │  ├─ Webhooks   │  │   History       ││  │  │  ├─ Session Cache (5 min TTL)   │  │   │
+│  │  └─ Events     │  │ - Agent Events  ││  │  │  ├─ Message Dedup               │  │   │
+│  │                │  │ - LGPD Logs     ││  │  │  └─ Job Queue                   │  │   │
+│  │                │  └─────────────────┘│  │  └──────────────────────────────────┘  │   │
+│  │                │                     │  │                                         │   │
+│  │  Redis         │  ┌─────────────────┐│  │  ┌──────────────────────────────────┐  │   │
+│  │  (Port: 6319)  │  │ Monitoring:     ││  │  │  PgAdmin (Port: 5050)            │  │   │
+│  │  ├─ Cache      │  │ - AgentOps      ││  │  │  └─ PostgreSQL Admin UI         │  │   │
+│  │  ├─ Dedup      │  │ - Email Alerts  ││  │  └──────────────────────────────────┘  │   │
+│  │  └─ Queues     │  │ - Slack Logs    ││  │                                         │   │
+│  │                │  └─────────────────┘│  │                                         │   │
+│  └────────────────────────────────────┘  └──────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘</div>
 
             <h3>Componentes Principais</h3>
             <div class="grid-3">
                 <div class="service-card">
                     <div class="service-name"><i class="fas fa-globe"></i> API Principal</div>
-                    <p>Flask + ASGI/Uvicorn</p>
+                    <p>FastAPI/Uvicorn</p>
                     <p class="service-port">Port: 3000</p>
                     <p>5 workers, 800MB RAM</p>
+                    <p>4 Blueprints principais</p>
                 </div>
                 <div class="service-card">
                     <div class="service-name"><i class="fas fa-envelope"></i> Webhooks</div>
-                    <p>Flask + ASGI/Uvicorn</p>
+                    <p>FastAPI/Uvicorn</p>
                     <p class="service-port">Port: 3004</p>
                     <p>5 workers, 800MB RAM</p>
+                    <p>Vonage + Twilio</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name"><i class="fas fa-robot"></i> Agent IA</div>
+                    <p>OpenAI Agents</p>
+                    <p class="service-port">Model: gpt-4o</p>
+                    <p>12+ Tools integradas</p>
+                    <p>Guardrails de segurança</p>
                 </div>
                 <div class="service-card">
                     <div class="service-name"><i class="fas fa-hospital"></i> Mock Gateway</div>
                     <p>Flask + Flasgger</p>
                     <p class="service-port">Port: 5001</p>
-                    <p>Simula API NetPACS</p>
+                    <p>AnimatiPACS Mock</p>
+                    <p>11+ Controllers</p>
                 </div>
                 <div class="service-card">
                     <div class="service-name"><i class="fas fa-database"></i> PostgreSQL</div>
                     <p>Versão 15</p>
                     <p class="service-port">Port: 5122</p>
-                    <p>Dados principais</p>
+                    <p>15+ tabelas</p>
+                    <p>Pacientes, agendamentos</p>
                 </div>
                 <div class="service-card">
                     <div class="service-name"><i class="fas fa-leaf"></i> MongoDB</div>
                     <p>Versão 7</p>
                     <p class="service-port">Port: 29017</p>
-                    <p>Auditoria e logs</p>
+                    <p>3+ Collections</p>
+                    <p>Auditoria LGPD</p>
                 </div>
                 <div class="service-card">
                     <div class="service-name"><i class="fas fa-bolt"></i> Redis</div>
                     <p>Versão 7 Alpine</p>
                     <p class="service-port">Port: 6319</p>
-                    <p>Cache e dedup</p>
+                    <p>Session Cache</p>
+                    <p>Dedup + Queues</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name"><i class="fas fa-search"></i> ChromaDB</div>
+                    <p>Vector Database</p>
+                    <p>Embedding: OpenAI</p>
+                    <p>RAG por departamento</p>
+                    <p>Context retrieval</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-name"><i class="fas fa-chart-bar"></i> PgAdmin</div>
+                    <p>PostgreSQL Admin</p>
+                    <p class="service-port">Port: 5050</p>
+                    <p>Interface Web</p>
+                    <p>Gerenciamento DB</p>
                 </div>
             </div>
         </section>
@@ -587,30 +721,55 @@ docker compose ps</code></div>
             </div>
 
             <h3>3.2 Instalação Local (Desenvolvimento)</h3>
-            <div class="code-block"><code># Criar ambiente virtual
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ Requer:</strong> Python 3.11+, PostgreSQL, MongoDB, Redis instalados localmente
+            </div>
+
+            <div class="code-block"><code># Criar e ativar ambiente virtual
 python -m venv venv
 
-# Ativar ambiente
 # Windows:
 venv\Scripts\activate
 # Linux/Mac:
 source venv/bin/activate
 
-# Instalar dependências do backend
+# Instalar dependências
 pip install -r backend/requirements.txt
-
-# Instalar dependências do Mock Gateway
 pip install -r net_mock_api_gateway/requirements.txt
 
-# Copiar variáveis de ambiente
+# Copiar e configurar variáveis
 cp project/master.env backend/app/keys/master.env
 
-# Subir apenas infraestrutura (PostgreSQL, MongoDB, Redis)
+# Subir infra (Docker)
 docker compose up -d postgres_medicsheduler mongodb_medicsheduler redis_medicsheduler
 
-# Rodar API localmente
+# Esperar 10s para DBs iniciarem
+sleep 10
+
+# Rodar migrations
 cd backend
-python api.py</code></div>
+python scripts/_init_.py
+
+# Iniciar APIs em terminais separados
+# Terminal 1: API Principal
+python api.py
+
+# Terminal 2: Webhooks
+python webhooks.py
+
+# Terminal 3: Mock Gateway
+cd ../net_mock_api_gateway
+python api_gateway.py</code></div>
+
+            <div class="alert alert-info">
+                <strong>💡 Dev Tips:</strong>
+                <ul>
+                    <li>Use <code>FLASK_ENV=development</code> para reload automático</li>
+                    <li>ChromaDB cria pasta <code>.chroma</code> localmente (adicione ao .gitignore)</li>
+                    <li>Sessions persistem em <code>backend/convthreads/</code></li>
+                </ul>
+            </div>
         </section>
 
         <!-- 4. Configuração -->
@@ -1134,6 +1293,709 @@ docker stats --no-stream</code></div>
             </div>
 
             <div class="card">
+                <h3><i class="fas fa-exclamation-circle" style="color: var(--method-delete);"></i> Agent IA retorna erro</h3>
+                <div class="code-block"><code># Verificar chave OpenAI
+echo $OPENAI_API_KEY
+
+# Verificar logs do agent
+docker compose logs -f api_medicsheduler | grep -i agent
+
+# Testar chamada manual
+curl -X POST http://localhost:3000/agent/process \
+  -H "Content-Type: application/json" \
+  -d '{"user_message": "teste"}'</code></div>
+                <p><strong>Causas comuns:</strong></p>
+                <ul>
+                    <li>API Key inválida ou expirada</li>
+                    <li>Quota de tokens ultrapassada</li>
+                    <li>Guardrails bloqueando requisição</li>
+                    <li>ChromaDB não conectado</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-exclamation-circle" style="color: var(--method-delete);"></i> Webhooks não recebem mensagens</h3>
+                <p><strong>Passos de debug:</strong></p>
+                <ol>
+                    <li>Verificar se webhook está acessível externamente: <code class="inline-code">ngrok http 3004</code></li>
+                    <li>Validar URL no console Vonage/Twilio</li>
+                    <li>Ver logs: <code class="inline-code">docker compose logs -f webhooks_medicsheduler</code></li>
+                    <li>Testar com curl: <code class="inline-code">curl -X POST http://localhost:3004/vonage -d '...'</code></li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-exclamation-circle" style="color: var(--method-delete);"></i> Database connection error</h3>
+                <div class="code-block"><code># Verificar se PostgreSQL está rodando
+docker compose ps postgres_medicsheduler
+
+# Testar conexão
+docker compose exec postgres_medicsheduler psql -U postgres -d meubanco -c "SELECT 1"
+
+# Resetar PostgreSQL
+docker compose down -v postgres_medicsheduler
+docker compose up -d postgres_medicsheduler</code></div>
+            </div>
+        </section>
+
+        <!-- 11. Backend - Estrutura -->
+        <section id="backend-estrutura" class="section">
+            <h2>11. Backend - Estrutura</h2>
+
+            <h3>Organização de Diretórios</h3>
+            <div class="code-block"><code>backend/
+├── api.py                    # FastAPI principal (Port 3000)
+├── webhooks.py               # Webhooks handler (Port 3004)
+├── requirements.txt          # Dependências Python
+├── app/
+│   ├── __init__.py
+│   ├── ai.py                 # Agent IA - Main orchestrator
+│   ├── constants.py          # Constants globais
+│   ├── guardrail.py          # Input/Output validation
+│   ├── tools.py              # Tool definitions
+│   ├── blueprints/           # Flask blueprints
+│   │   ├── agent/            # POST /agent/process
+│   │   ├── fallback/         # POST /fallback/* (Human handoff)
+│   │   ├── rag/              # GET /rag/health, POST /rag/search
+│   │   └── webhooks/         # GET /vonage, POST /twilio/message
+│   ├── keys/                 # Chaves secretas (encrypted)
+│   ├── models/               # SQLAlchemy models
+│   │   ├── db.py             # Database connection
+│   │   ├── fallback_models.py
+│   │   └── system_breakdown.py
+│   ├── schemas/              # Request/Response schemas
+│   ├── services/             # Business logic
+│   │   ├── audit/            # Audit logging (MongoDB)
+│   │   ├── connectors/       # Vonage, Twilio clients
+│   │   ├── email/            # SMTP notifications
+│   │   ├── middleware/       # Request interceptors
+│   │   ├── rag/              # ChromaDB + search
+│   │   ├── system_breakdown/ # Fallback handling
+│   │   ├── twilio/           # Twilio integration
+│   │   └── vonage/           # Vonage integration
+│   └── util/
+│       ├── config.py         # Load from master.env
+│       ├── logger.py         # Structured logging
+│       └── util.py           # Helper functions
+├── migrations/               # Database migrations
+│   ├── 001_create_threads_table.sql
+│   ├── 002_create_items_table.sql
+│   └── ... (10+ migrations)
+├── scripts/
+│   ├── agent/                # Agent-specific scripts
+│   ├── audit/                # Audit logging
+│   ├── tools/                # Tool implementations
+│   │   ├── SearchSlots.py
+│   │   ├── OpenBooking.py
+│   │   ├── RetrieveDocumentationContext.py
+│   │   └── ... (12+ tools)
+│   └── healtcheck/
+├── mongo-init.js             # MongoDB initialization
+├── logs/                     # Log files (volumes)
+└── convthreads/              # Conversation threads cache</code></div>
+
+            <h3>Componentes Principais</h3>
+
+            <div class="card">
+                <h4><i class="fas fa-cog"></i> ai.py - Agent IA Orchestrator</h4>
+                <p>Arquivo central que orquestra todo o agente de IA.</p>
+                <div class="code-block"><code># Responsabilidades:
+- Inicializa cliente OpenAI com gpt-4o
+- Carrega lista de tools disponíveis
+- Aplica input guardrails (validação)
+- Executa tool calls em sequência
+- Aplica output guardrails (sanitização)
+- Registra sessão no MongoDB
+- Gerencia contexto RAG</code></div>
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-guarani"></i> guardrail.py - Segurança</h4>
+                <p>Validação de input e sanitização de output.</p>
+                <ul>
+                    <li><strong>Input Guardrails:</strong> Detecta prompts maliciosos, linguagem abusiva</li>
+                    <li><strong>Output Guardrails:</strong> Remove informações sensíveis, valida respostas</li>
+                    <li><strong>LGPD Compliance:</strong> Mascaramento de dados pessoais</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4><i class="fas fa-tools"></i> tools.py - Tool Definitions</h4>
+                <p>Dicionário com todas as ferramentas disponíveis para o agente.</p>
+                <div class="code-block"><code"># Exemplo de tool:
+{
+  "type": "function",
+  "function": {
+    "name": "SearchSlots",
+    "description": "Busca horários disponíveis",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "medico_id": {"type": "string"},
+        "data": {"type": "string", "format": "date"}
+      }
+    }
+  }
+}</code></div>
+            </div>
+
+            <h3>Blueprints (Rotas)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Blueprint</th>
+                        <th>Endpoints</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Agent</strong></td>
+                        <td>POST /agent/process</td>
+                        <td>Processa mensagem do usuário com Agent IA</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fallback</strong></td>
+                        <td>POST /fallback/create<br>POST /fallback/ticket</td>
+                        <td>Cria ticket de atendimento humano</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RAG</strong></td>
+                        <td>GET /rag/health<br>POST /rag/search</td>
+                        <td>Busca no ChromaDB, health check</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Webhooks</strong></td>
+                        <td>POST /twilio/message<br>POST /vonage<br>POST /vonage/message-status</td>
+                        <td>Recebe mensagens dos provedores</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Models (Database)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tabela</th>
+                        <th>Descrição</th>
+                        <th>DB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>threads</td>
+                        <td>Conversas entre usuários e agente</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>items</td>
+                        <td>Mensagens individuais (histórico)</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>system_state</td>
+                        <td>Estado atual do agente</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>fallback_tickets</td>
+                        <td>Tickets de atendimento humano</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>chat_requests</td>
+                        <td>Requisições recebidas</td>
+                        <td>PostgreSQL</td>
+                    </tr>
+                    <tr>
+                        <td>audit_logs</td>
+                        <td>Log de todas as ações (LGPD)</td>
+                        <td>MongoDB</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Services (Lógica de Negócio)</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Audit Service</h4>
+                    <p>Registra em MongoDB todas as ações para LGPD.</p>
+                </div>
+                <div class="card">
+                    <h4>Connector Services</h4>
+                    <p>Vonage e Twilio clients para enviar mensagens.</p>
+                </div>
+                <div class="card">
+                    <h4>Email Service</h4>
+                    <p>SMTP para notificações e alertas.</p>
+                </div>
+                <div class="card">
+                    <h4>RAG Service</h4>
+                    <p>Integração com ChromaDB para busca contextual.</p>
+                </div>
+                <div class="card">
+                    <h4>System Breakdown</h4>
+                    <p>Fallback quando agente falha.</p>
+                </div>
+                <div class="card">
+                    <h4>Middleware</h4>
+                    <p>Interceptadores de requisição/resposta.</p>
+                </div>
+            </div>
+
+            <h3>Scripts de Utilitário</h3>
+            <div class="code-block"><code># Testar todas as tools
+cd backend/scripts
+python tools/TEST_ALL_TOOLS.py
+
+# Criar log de auditoria
+python audit/create_log.py
+
+# Buscar paciente no connector
+python schemas/fetch_patient_by_connector.py
+
+# Health check
+python healtcheck/test_api.py</code></div>
+        </section>
+
+        <!-- 12. Agent IA & Tools -->
+        <section id="agent-ia" class="section">
+            <h2>12. Agent IA & Tools</h2>
+
+            <h3>Visão Geral do Agent</h3>
+            <div class="card">
+                <p><strong>Modelo:</strong> GPT-4o (OpenAI)</p>
+                <p><strong>Framework:</strong> OpenAI Agents (Assistants API v2)</p>
+                <p><strong>Monitoramento:</strong> AgentOps</p>
+                <p><strong>Contexto:</strong> RAG via ChromaDB</p>
+                <p><strong>Segurança:</strong> Input/Output Guardrails</p>
+            </div>
+
+            <h3>12 Tools Disponíveis</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Arquivo</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SearchSlots</strong></td>
+                        <td>SearchSlots.py</td>
+                        <td>Busca horários disponíveis para consulta</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OpenBooking</strong></td>
+                        <td>OpenBooking.py</td>
+                        <td>Abre agendamento para paciente</td>
+                        <td>Action</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SearchUnidade</strong></td>
+                        <td>SearchUnidade.py</td>
+                        <td>Busca unidade de atendimento</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SearchSala</strong></td>
+                        <td>SearchSala.py</td>
+                        <td>Busca sala de atendimento</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ListConvenios</strong></td>
+                        <td>ListConvenios.py</td>
+                        <td>Lista convênios disponíveis</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ListPlanosConvenio</strong></td>
+                        <td>ListPlanosConvenio.py</td>
+                        <td>Lista planos de um convênio</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ListProcedimentos</strong></td>
+                        <td>ListProcedimentos.py</td>
+                        <td>Lista procedimentos disponíveis</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ListFiliais</strong></td>
+                        <td>ListFiliais.py</td>
+                        <td>Lista filiais da clínica</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RetrieveDocumentationContext</strong></td>
+                        <td>RetrieveDocumentationContext.py</td>
+                        <td>Busca no ChromaDB (RAG)</td>
+                        <td>Query</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GetCurrentDate</strong></td>
+                        <td>GetCurrentDate.py</td>
+                        <td>Retorna data/hora atual</td>
+                        <td>Utility</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FallbackToHuman</strong></td>
+                        <td>FallbackToHuman.py</td>
+                        <td>Encaminha para atendimento humano</td>
+                        <td>Action</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Fluxo de Execução</h3>
+            <div class="card">
+                <div class="code-block"><code">1. Mensagem recebida via webhook (Vonage/Twilio)
+   ↓
+2. Validação de input (Guardrails)
+   ↓
+3. Busca de contexto no RAG (ChromaDB)
+   ↓
+4. Agent IA processa com GPT-4o
+   ↓
+5. Se precisa tool → Executa tool correspondente
+   ↓
+6. Aguarda resposta e processa nova iteração
+   ↓
+7. Validação de output (Guardrails)
+   ↓
+8. Envia resposta via WhatsApp
+   ↓
+9. Auditoria registrada em MongoDB</code></div>
+            </div>
+
+            <h3>Exemplo: Processar Mensagem</h3>
+            <div class="code-block"><code"># Request
+curl -X POST http://localhost:3000/agent/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": "5511999999999",
+    "user_name": "João Silva",
+    "message": "Quero agendar uma consulta com um cardiologista",
+    "thread_id": "abc123" # opcional, cria nova se não informar
+  }'
+
+# Response
+{
+  "agent_response": "Encontrei 3 cardiologistas disponíveis. Você prefere qual?",
+  "thread_id": "abc123",
+  "session_id": "sess_xyz",
+  "tool_calls": [
+    {
+      "tool": "SearchSlots",
+      "status": "success"
+    }
+  ]
+}</code></div>
+
+            <h3>Monitoramento do Agent</h3>
+            <div class="card">
+                <p><strong>AgentOps Dashboard:</strong> <a href="https://app.agentops.ai" target="_blank">https://app.agentops.ai</a></p>
+                <ul>
+                    <li>Sessões do agente com metadata</li>
+                    <li>Uso de tokens (input/output/cache)</li>
+                    <li>Chamadas de tools executadas</li>
+                    <li>Tempo de resposta de cada step</li>
+                    <li>Erros e exceções</li>
+                    <li>Análise de custo</li>
+                </ul>
+            </div>
+
+            <h3>Configuração do Agent (master.env)</h3>
+            <div class="code-block"><code"># OpenAI
+OPENAI_API_KEY=sk-proj-xxx
+OPENAI_MODEL=gpt-4o
+OPENAI_MAX_TOKENS=8000
+
+# AgentOps (opcional)
+AGENTOPS_KEY=xxx
+AGENTOPS_ENABLED=true
+
+# Guardrails
+ENABLE_INPUT_GUARDRAILS=true
+ENABLE_OUTPUT_GUARDRAILS=true
+MAX_CONVERSATION_LENGTH=20
+
+# RAG/ChromaDB
+CHROMA_ENABLED=true
+CHROMA_SIMILARITY_THRESHOLD=0.7
+RAG_SEARCH_LIMIT=5</code></div>
+        </section>
+
+        <!-- 13. RAG & ChromaDB -->
+        <section id="rag" class="section">
+            <h2>13. RAG (Retrieval-Augmented Generation) & ChromaDB</h2>
+
+            <h3>O que é RAG?</h3>
+            <div class="card">
+                <p>RAG (Retrieval-Augmented Generation) augmenta o LLM com busca em documentação relevante, permitindo respostas mais precisas e fundamentadas em dados específicos do domínio.</p>
+                <p><strong>Fluxo:</strong></p>
+                <ol>
+                    <li>Pergunta do usuário é convertida em embedding (OpenAI)</li>
+                    <li>Busca de documentos similares no ChromaDB</li>
+                    <li>Documentos são adicionados ao contexto do agent</li>
+                    <li>Agent gera resposta com informação recuperada</li>
+                </ol>
+            </div>
+
+            <h3>ChromaDB - Vector Database</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4><i class="fas fa-database"></i> Collections</h4>
+                    <p>ChromaDB armazena embeddings organizados por departamento/coleção:</p>
+                    <ul>
+                        <li><strong>cardiologia</strong> - Documentos de cardiologia</li>
+                        <li><strong>pediatria</strong> - Documentos de pediatria</li>
+                        <li><strong>general</strong> - Políticas e procedimentos gerais</li>
+                        <li><strong>faq</strong> - Perguntas frequentes</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4><i class="fas fa-puzzle-piece"></i> Embeddings</h4>
+                    <p>Texto é convertido em vetor 1536-dimensional usando:</p>
+                    <ul>
+                        <li><strong>Modelo:</strong> text-embedding-3-small (OpenAI)</li>
+                        <li><strong>Dimensão:</strong> 1536</li>
+                        <li><strong>Token Limit:</strong> 8191</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Adicionar Documentação ao RAG</h3>
+            <div class="card">
+                <h4>Método 1: Via API</h4>
+                <div class="code-block"><code"># POST /rag/add-documents
+curl -X POST http://localhost:3000/rag/add-documents \
+  -H "Content-Type: application/json" \
+  -d '{
+    "collection": "cardiologia",
+    "documents": [
+      {
+        "id": "doc_001",
+        "content": "A hipertensão é...",
+        "metadata": {"source": "manual"}
+      }
+    ]
+  }'</code></div>
+            </div>
+
+            <div class="card">
+                <h4>Método 2: Via Script Python</h4>
+                <div class="code-block"><code"># scripts/seeds/seed_rag.py
+import chromadb
+
+client = chromadb.HttpClient(host="localhost", port=8000)
+collection = client.get_or_create_collection("cardiologia")
+
+collection.add(
+    ids=["doc_001"],
+    documents=["Conteúdo do documento"],
+    metadatas=[{"source": "manual"}]
+)</code></div>
+            </div>
+
+            <h3>Buscar no RAG</h3>
+            <div class="code-block"><code"># POST /rag/search
+curl -X POST http://localhost:3000/rag/search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Como tratar hipertensão?",
+    "collection": "cardiologia",
+    "limit": 5,
+    "threshold": 0.7
+  }'
+
+# Response
+{
+  "results": [
+    {
+      "id": "doc_001",
+      "distance": 0.15,  # menor = mais similar
+      "content": "A hipertensão...",
+      "metadata": {"source": "manual"}
+    }
+  ]
+}</code></div>
+
+            <h3>Configuração RAG (master.env)</h3>
+            <div class="code-block"><code"># ChromaDB
+CHROMA_HOST=localhost
+CHROMA_PORT=8000
+CHROMA_ENABLED=true
+
+# Embeddings
+EMBEDDING_MODEL=text-embedding-3-small
+EMBEDDING_DIMENSION=1536
+
+# Search
+RAG_SEARCH_LIMIT=5
+RAG_SIMILARITY_THRESHOLD=0.7
+RAG_AUTO_REFRESH=true</code></div>
+
+            <h3>Health Check RAG</h3>
+            <div class="code-block"><code"># Check endpoint
+curl http://localhost:3000/rag/health
+
+# Response
+{
+  "status": "healthy",
+  "collections": 4,
+  "documents": 234,
+  "last_update": "2025-12-14T10:30:00Z"
+}</code></div>
+        </section>
+
+        <!-- 14. Operações Comuns -->
+        <section id="operacoes" class="section">
+            <h2>14. Operações Comuns</h2>
+
+            <h3>Blueprints e Fluxo de Requisição</h3>
+            <div class="card">
+                <p><strong>Estrutura de Rotas (blueprints/):</strong></p>
+                <table>
+                    <tr>
+                        <td><strong>agent/</strong></td>
+                        <td>Processamento de mensagens com IA<br/><code>/agent/process</code> - Main entrypoint</td>
+                    </tr>
+                    <tr>
+                        <td><strong>fallback/</strong></td>
+                        <td>Sistema de fallback para falhas<br/><code>/fallback/create-ticket</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>rag/</strong></td>
+                        <td>Retrieval Augmented Generation<br/><code>/rag/search</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>webhooks/</strong></td>
+                        <td>Recepção webhooks externos<br/><code>/twilio/message</code>, <code>/vonage</code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Agent IA - OpenAI Agents</h3>
+            <div class="card">
+                <h4>Configuração</h4>
+                <div class="code-block"><code># backend/app/ai.py
+MODEL = "gpt-4o"
+WORKFLOW_NAME = "MedicScheduler Agent"
+PARALLEL_TOOL_CALLS = False
+MAX_ITERATIONS = 10
+
+# Guardrails de segurança
+input_guardrails = [input_safety_guardrail]
+output_guardrails = [output_safety_guardrail]</code></div>
+            </div>
+
+            <h3>Tools Disponíveis (12+)</h3>
+            <div class="card">
+                <p><strong>Localização:</strong> <code>backend/scripts/tools/</code></p>
+                <ul style="columns: 2; column-gap: 2rem;">
+                    <li>✅ SearchSlots - Busca horários</li>
+                    <li>✅ OpenBooking - Confirma agendamento</li>
+                    <li>✅ ListConvenios - Lista convênios</li>
+                    <li>✅ ListProcedimentos - Procedimentos</li>
+                    <li>✅ SearchUnidade - Localiza unidades</li>
+                    <li>✅ SearchSala - Busca salas</li>
+                    <li>✅ ListFiliais - Lista filiais</li>
+                    <li>✅ ListPlanosConvenio - Planos</li>
+                    <li>✅ GetCurrentDate - Data/hora</li>
+                    <li>✅ RetrieveDocContext - RAG search</li>
+                    <li>✅ FallbackToHuman - Escala humana</li>
+                    <li>✅ TEST_ALL_TOOLS - Test suite</li>
+                </ul>
+            </div>
+
+            <h3>Services Principais</h3>
+            <div class="card">
+                <p><strong>Localização:</strong> <code>backend/app/services/</code></p>
+                <ul>
+                    <li><strong>audit/</strong> - Logging LGPD MongoDB</li>
+                    <li><strong>connectors/</strong> - AnimatiPACS integration</li>
+                    <li><strong>email/</strong> - SMTP notifications</li>
+                    <li><strong>middleware/</strong> - Request processing</li>
+                    <li><strong>rag/</strong> - ChromaDB + embeddings</li>
+                    <li><strong>system_breakdown/</strong> - Failover detection</li>
+                    <li><strong>twilio/</strong> - Twilio integration</li>
+                    <li><strong>vonage/</strong> - Vonage integration</li>
+                </ul>
+            </div>
+
+            <h3>Mock Gateway - AnimatiPACS (11+ Controllers)</h3>
+            <div class="card">
+                <p><strong>Localização:</strong> <code>net_mock_api_gateway/blueprints/netpacs_mock/</code></p>
+                <ul style="columns: 2; column-gap: 2rem;">
+                    <li>auth_controller</li>
+                    <li>convenio_controller</li>
+                    <li>medico_controller</li>
+                    <li>horario_controller</li>
+                    <li>paciente_controller</li>
+                    <li>procedimento_controller</li>
+                    <li>unidade_controller</li>
+                    <li>filiais_controller</li>
+                    <li>sala_controller</li>
+                    <li>consulta_preco_controller</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 15. Monitoramento -->
+curl http://localhost:5001/health
+
+# PostgreSQL
+docker compose exec postgres_medicsheduler pg_isready -U postgres
+
+# Redis
+docker compose exec redis_medicsheduler redis-cli ping
+
+# MongoDB
+docker compose exec mongodb_medicsheduler mongosh --eval "db.adminCommand('ping')"</code></div>
+
+            <h3>Logs em Tempo Real</h3>
+            <div class="card">
+                <table>
+                    <tr>
+                        <td>Todos os serviços</td>
+                        <td><code class="inline-code">docker compose logs -f</code></td>
+                    </tr>
+                    <tr>
+                        <td>Serviço específico</td>
+                        <td><code class="inline-code">docker compose logs -f api_medicsheduler</code></td>
+                    </tr>
+                    <tr>
+                        <td>Últimas 100 linhas</td>
+                        <td><code class="inline-code">docker compose logs --tail 100 api_medicsheduler</code></td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Swagger UIs</h3>
+            <div class="grid-3">
+                <div class="card">
+                    <h4>API Principal</h4>
+                    <p><a href="http://localhost:3000/apidocs" target="_blank">localhost:3000/apidocs</a></p>
+                </div>
+                <div class="card">
+                    <h4>Webhooks</h4>
+                    <p><a href="http://localhost:3004/apidocs" target="_blank">localhost:3004/apidocs</a></p>
+                </div>
+                <div class="card">
+                    <h4>Mock Gateway</h4>
+                    <p><a href="http://localhost:5001/apidocs" target="_blank">localhost:5001/apidocs</a></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Erros Comuns</h3>
+
+            <div class="card">
                 <h3><i class="fas fa-exclamation-circle" style="color: var(--method-delete);"></i> Erro de conexão com banco</h3>
                 <div class="code-block"><code># Verificar se PostgreSQL está rodando
 docker compose ps postgres_medicsheduler
@@ -1169,11 +2031,6 @@ docker system prune -af
 docker compose build --no-cache
 docker compose up -d</code></div>
             </div>
-        </section>
-
-        <!-- 11. Operações Comuns -->
-        <section id="operacoes" class="section">
-            <h2>11. Operações Comuns</h2>
 
             <h3>Backup e Restore</h3>
             <div class="card">
@@ -1230,9 +2087,9 @@ docker compose exec api_medicsheduler python migrations/rebuild_mock_database.py
             </div>
         </section>
 
-        <!-- 12. Monitoramento -->
+        <!-- 15. Monitoramento -->
         <section id="monitoramento" class="section">
-            <h2>12. Monitoramento</h2>
+            <h2>15. Monitoramento</h2>
 
             <h3>Logs</h3>
             <div class="card">
@@ -1335,13 +2192,62 @@ ADMIN_EMAIL_LIST=admin@exemplo.com,dev@exemplo.com</code></div>
         </section>
 
         <footer class="runbook-footer">
-            <p><i class="fas fa-book"></i> Runbook - WhatsApp Medic Scheduler v2.0</p>
-            <p>Última atualização: Dezembro 2025</p>
+            <p><i class="fas fa-book"></i> Runbook - WhatsApp Medic Scheduler v3.0 (Final Phase - Fase de Produção)</p>
+            <p>Última atualização: 14 de Dezembro de 2025 | Estrutura Completa: Agent IA, 12+ Tools, RAG, ChromaDB, Vonage/Twilio, Fallback System</p>
+            <p><small>Desenvolvido para AnimatiPACS | Pronto para deploy em produção | Documentação atualizada</small></p>
         </footer>
         </main>
     </div>
 
     <script>
+        // Função para processar blocos de código
+        function initializeCodeBlocks() {
+            document.querySelectorAll('.code-block').forEach((block, index) => {
+                const code = block.querySelector('code');
+                if (!code) return;
+
+                const codeText = code.textContent;
+                
+                // Criar container com header
+                const header = document.createElement('div');
+                header.className = 'code-block-header';
+                
+                const language = document.createElement('div');
+                language.className = 'code-block-language';
+                language.textContent = '$ bash';
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'code-copy-btn';
+                copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copiar';
+                copyBtn.setAttribute('data-code-index', index);
+                
+                copyBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Copiar para clipboard
+                    navigator.clipboard.writeText(codeText).then(() => {
+                        // Feedback visual
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                        copyBtn.classList.add('copied');
+                        
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    }).catch(() => {
+                        alert('Erro ao copiar. Tente novamente.');
+                    });
+                });
+                
+                header.appendChild(language);
+                header.appendChild(copyBtn);
+                
+                // Inserir header no início do bloco
+                code.parentNode.insertBefore(header, code);
+            });
+        }
+
         // Mobile menu toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
@@ -1386,7 +2292,15 @@ ADMIN_EMAIL_LIST=admin@exemplo.com,dev@exemplo.com</code></div>
             });
         });
 
-        });
+        // Inicializar blocos de código quando o DOM está pronto
+        document.addEventListener('DOMContentLoaded', initializeCodeBlocks);
+        
+        // Se o documento já foi carregado, inicializar imediatamente
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCodeBlocks);
+        } else {
+            initializeCodeBlocks();
+        }
     </script>
     <script src="js/main.js"></script>
 </body>
