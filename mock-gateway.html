@@ -198,6 +198,10 @@
                     <li><a href="#horario-controller">Horário Controller</a></li>
                     <li><a href="#atendimento-controller">Atendimento Controller</a></li>
                     <li><a href="#convenio-controller">Convênio Controller</a></li>
+                    <li><a href="#procedimento-controller">Procedimento Controller</a></li>
+                    <li><a href="#filiais-controller">Filiais Controller</a></li>
+                    <li><a href="#unidade-controller">Unidade Controller</a></li>
+                    <li><a href="#consulta-preco-controller">Consulta Preço Controller</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
@@ -405,11 +409,37 @@
                     </div>
 
                     <div class="controller-card">
-                        <h4><i class="fas fa-user-md"></i> Médico Controller</h4>
-                        <p>Listagem de médicos e profissionais.</p>
+                        <h4><i class="fas fa-stethoscope"></i> Procedimento Controller</h4>
+                        <p>Listagem de procedimentos médicos com filtros avançados.</p>
                         <div class="endpoints">
-                            <code>GET /netris/api/medicos</code>
-                            <code>GET /netris/api/profissionais</code>
+                            <code>GET /netris/api/procedimentos</code>
+                            <code>GET /netris/api/procedimentos/{id}</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-hospital"></i> Filiais Controller</h4>
+                        <p>Gestão de filiais da rede com suporte a filtros SQL avançados.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/filiais</code>
+                            <code>GET /netris/api/filiais/{id}</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-building"></i> Unidade Controller</h4>
+                        <p>Gestão de unidades de atendimento.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/unidades</code>
+                            <code>GET /netris/api/unidades/{id}</code>
+                        </div>
+                    </div>
+
+                    <div class="controller-card">
+                        <h4><i class="fas fa-dollar-sign"></i> Consulta Preço Controller</h4>
+                        <p>Consulta de preços de procedimentos por plano de convênio.</p>
+                        <div class="endpoints">
+                            <code>GET /netris/api/consultarPreco</code>
                         </div>
                     </div>
                 </div>
@@ -707,6 +737,167 @@ curl -X GET "http://localhost:3001/api-gateway/netris/api/pacientes?telefone_cel
                             <tr><td><code>tipo_guia</code></td><td>String</td><td>INFORMADA, GERADA</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- Procedimento Controller -->
+            <section id="procedimento-controller" class="doc-section">
+                <h2><i class="fas fa-stethoscope"></i> Procedimento Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/procedimentos</span>
+                    </div>
+                    <p>Lista procedimentos médicos com suporte a filtros avançados (eq, like, ilike, gt, gte, lt, lte, ne, in).</p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <tr><td><code>distinct</code></td><td>boolean</td><td>Usar DISTINCT (padrão: false)</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite (max: 100, padrão: 10)</td></tr>
+                        <tr><td><code>page</code></td><td>int</td><td>Paginação (padrão: 1)</td></tr>
+                        <tr><td><code>projection</code></td><td>string</td><td>Campos (ex: id_procedimento,nome,tipo)</td></tr>
+                        <tr><td><code>sort</code></td><td>string</td><td>Ordenação (ex: asc:id_procedimento,desc:nome)</td></tr>
+                        <tr><td><code>id_procedimento</code></td><td>string</td><td>Filtro por ID (ex: eq:1)</td></tr>
+                        <tr><td><code>nome</code></td><td>string</td><td>Filtro por nome (ex: ilike:tomografia)</td></tr>
+                        <tr><td><code>tipo</code></td><td>string</td><td>Filtro por tipo (ex: eq:EXAME)</td></tr>
+                    </table>
+
+                    <h4>Exemplo de Request</h4>
+                    <div class="code-block">
+                        <pre><code class="bash">curl -X GET "http://localhost:3001/api-gateway/netris/api/procedimentos?tipo=eq:EXAME&limit=20&sort=asc:nome" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filiais Controller -->
+            <section id="filiais-controller" class="doc-section">
+                <h2><i class="fas fa-hospital"></i> Filiais Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/filiais</span>
+                    </div>
+                    <p>Lista filiais com suporte a filtros SQL avançados (eq, like, ilike, gt, gte, lt, lte, ne, in).</p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <tr><td><code>distinct</code></td><td>boolean</td><td>Usar DISTINCT (padrão: false)</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite (max: 100, padrão: 10)</td></tr>
+                        <tr><td><code>page</code></td><td>int</td><td>Paginação (padrão: 1)</td></tr>
+                        <tr><td><code>nome</code></td><td>string</td><td>Filtro por nome (ex: ilike:centro)</td></tr>
+                        <tr><td><code>cidade</code></td><td>string</td><td>Filtro por cidade (ex: eq:São Paulo)</td></tr>
+                        <tr><td><code>uf</code></td><td>string</td><td>Filtro por estado (ex: eq:SP)</td></tr>
+                        <tr><td><code>cnpj</code></td><td>string</td><td>Filtro por CNPJ (ex: eq:12345678000100)</td></tr>
+                    </table>
+
+                    <h4>Exemplo de Request</h4>
+                    <div class="code-block">
+                        <pre><code class="bash">curl -X GET "http://localhost:3001/api-gateway/netris/api/filiais?cidade=eq:São Paulo&uf=eq:SP&limit=10" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"</code></pre>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span><strong>Fidelidade Total:</strong> Suporta 40+ campos de Filiais da API real (endereço, telefone, email, horários, etc).</span>
+                    </div>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/filiais/{id}</span>
+                    </div>
+                    <p>Obtém detalhes de uma filial específica pelo ID.</p>
+                </div>
+            </section>
+
+            <!-- Unidade Controller -->
+            <section id="unidade-controller" class="doc-section">
+                <h2><i class="fas fa-building"></i> Unidade Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/unidades</span>
+                    </div>
+                    <p>Lista unidades de atendimento com suporte a filtros avançados.</p>
+                    
+                    <h4>Query Parameters</h4>
+                    <table class="params-table">
+                        <tr><td><code>distinct</code></td><td>boolean</td><td>Usar DISTINCT (padrão: false)</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite (max: 100, padrão: 10)</td></tr>
+                        <tr><td><code>page</code></td><td>int</td><td>Paginação (padrão: 1)</td></tr>
+                        <tr><td><code>id_unidade</code></td><td>string</td><td>Filtro por ID (ex: eq:5)</td></tr>
+                        <tr><td><code>nome</code></td><td>string</td><td>Filtro por nome (ex: ilike:tomografia)</td></tr>
+                        <tr><td><code>ae</code></td><td>string</td><td>Filtro por tipo atendimento</td></tr>
+                    </table>
+
+                    <h4>Exemplo de Request</h4>
+                    <div class="code-block">
+                        <pre><code class="bash">curl -X GET "http://localhost:3001/api-gateway/netris/api/unidades?nome=ilike:radiologia&limit=10" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"</code></pre>
+                    </div>
+                </div>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/unidades/{id}</span>
+                    </div>
+                    <p>Obtém detalhes de uma unidade específica pelo ID.</p>
+                </div>
+            </section>
+
+            <!-- Consulta Preço Controller -->
+            <section id="consulta-preco-controller" class="doc-section">
+                <h2><i class="fas fa-dollar-sign"></i> Consulta Preço Controller</h2>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="endpoint-path">/api-gateway/netris/api/consultarPreco</span>
+                    </div>
+                    <p>Consulta o preço de um procedimento para determinado plano de convênio.</p>
+                    
+                    <h4>Query Parameters (Obrigatórios)</h4>
+                    <table class="params-table">
+                        <tr><td><code>idPlanoConvenio</code></td><td>string</td><td>ID do plano convênio (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>idProcedimento</code></td><td>string</td><td>ID do procedimento (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>dataString</code></td><td>string</td><td>Data (DD/MM/YYYY) (OBRIGATÓRIO)</td></tr>
+                    </table>
+
+                    <h4>Query Parameters (Opcionais)</h4>
+                    <table class="params-table">
+                        <tr><td><code>idFilial</code></td><td>string</td><td>ID da filial</td></tr>
+                        <tr><td><code>idMedico</code></td><td>string</td><td>ID do médico</td></tr>
+                    </table>
+
+                    <h4>Exemplo de Request</h4>
+                    <div class="code-block">
+                        <pre><code class="bash"># Consultar preço básico
+curl -X GET "http://localhost:3001/api-gateway/netris/api/consultarPreco?idPlanoConvenio=1&idProcedimento=1&dataString=20/11/2025" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"
+
+# Consultar preço com filial e médico
+curl -X GET "http://localhost:3001/api-gateway/netris/api/consultarPreco?idPlanoConvenio=2&idProcedimento=2&dataString=20/11/2025&idFilial=1&idMedico=1" \
+  -H "Authorization: Bearer eyJhbUdSQVRJT05fbdqQHV2vk"</code></pre>
+                    </div>
+
+                    <h4>Response Esperada</h4>
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "idPlanoConvenio": "1",
+  "idProcedimento": "1",
+  "data": "20/11/2025",
+  "preco": 180.50,
+  "currency": "BRL",
+  "descricao": "Procedimento 1",
+  "valido": true
+}</code></pre>
+                    </div>
                 </div>
             </section>
 
