@@ -567,8 +567,8 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros:</h5>
                     <table class="params-table">
-                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Filtros de busca</td></tr>
-                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100)</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100) - Opcional</td></tr>
+                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Dicionário de filtros (não obrigatório)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -595,8 +595,8 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros:</h5>
                     <table class="params-table">
-                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Filtros de busca</td></tr>
-                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100)</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100) - Opcional</td></tr>
+                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Dicionário de filtros (não obrigatório)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -623,8 +623,8 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros:</h5>
                     <table class="params-table">
-                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Filtros por cidade ou região</td></tr>
-                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100)</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100) - Opcional</td></tr>
+                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Dicionário de filtros (não obrigatório)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -651,8 +651,7 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros:</h5>
                     <table class="params-table">
-                        <tr><td><code>id_convenio</code></td><td>string</td><td>ID do convênio (obrigatório)</td></tr>
-                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100)</td></tr>
+                        <tr><td><code>id_convenio</code></td><td>int</td><td>ID do convênio (OBRIGATÓRIO)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -680,14 +679,13 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros (SearchSlotsParams):</h5>
                     <table class="params-table">
-                        <tr><td><code>data_busca</code></td><td>string</td><td>Data inicial (DD/MM/YYYY)</td></tr>
-                        <tr><td><code>id_convenio</code></td><td>string</td><td>ID do convênio</td></tr>
-                        <tr><td><code>id_filial</code></td><td>string</td><td>ID da filial/unidade</td></tr>
-                        <tr><td><code>id_plano_convenio</code></td><td>string</td><td>ID do plano do convênio</td></tr>
-                        <tr><td><code>id_procedimento</code></td><td>string</td><td>ID do procedimento</td></tr>
-                        <tr><td><code>data_final_busca</code></td><td>string</td><td>Data final (opcional)</td></tr>
-                        <tr><td><code>id_medico</code></td><td>string</td><td>ID do médico (opcional)</td></tr>
-                        <tr><td><code>busca_inteligente</code></td><td>bool</td><td>Busca inteligente (padrão: true)</td></tr>
+                        <tr><td><code>data_busca</code></td><td>str</td><td>Data inicial para busca (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_paciente</code></td><td>int</td><td>ID do paciente (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_convenio</code></td><td>int</td><td>ID do convênio (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_filial</code></td><td>int</td><td>ID da filial/unidade (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_plano_convenio</code></td><td>int</td><td>ID do plano do convênio (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_procedimento</code></td><td>int</td><td>ID do procedimento (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>peso_paciente</code></td><td>Decimal (opcional)</td><td>Peso do paciente em kg (Opcional)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -726,18 +724,18 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros (BookingParams):</h5>
                     <table class="params-table">
-                        <tr><td><code>date</code></td><td>string</td><td>Data (YYYY/MM/DD)</td></tr>
-                        <tr><td><code>time</code></td><td>string</td><td>Hora (HH:mm:ss)</td></tr>
-                        <tr><td><code>idHorario</code></td><td>int</td><td>ID do horário NetRIS (null = criar slot)</td></tr>
-                        <tr><td><code>idEscala</code></td><td>int</td><td>ID da escala médica</td></tr>
-                        <tr><td><code>idMedico</code></td><td>int</td><td>ID do médico</td></tr>
-                        <tr><td><code>idSala</code></td><td>int</td><td>ID da sala</td></tr>
-                        <tr><td><code>horaInicialString</code></td><td>string</td><td>Hora inicial</td></tr>
-                        <tr><td><code>duracaoProcedimento</code></td><td>int</td><td>Duração em minutos</td></tr>
-                        <tr><td><code>id_convenio</code></td><td>string</td><td>ID do convênio</td></tr>
-                        <tr><td><code>id_filial</code></td><td>string</td><td>ID da filial</td></tr>
-                        <tr><td><code>id_plano_convenio</code></td><td>string</td><td>ID do plano</td></tr>
-                        <tr><td><code>id_procedimento</code></td><td>string</td><td>ID do procedimento</td></tr>
+                        <tr><td><code>id_paciente</code></td><td>int</td><td>ID do paciente (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_convenio</code></td><td>int</td><td>ID do convênio (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_plano_convenio</code></td><td>int</td><td>ID do plano do convênio (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>data_string</code></td><td>str</td><td>Data do agendamento (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>hora_inicial_string</code></td><td>str</td><td>Hora inicial (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>duracao_procedimento</code></td><td>int</td><td>Duração em minutos (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_escala</code></td><td>int</td><td>ID da escala médica (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_horario</code></td><td>int (opcional)</td><td>ID do horário (Opcional - pode ser None)</td></tr>
+                        <tr><td><code>id_medico</code></td><td>int</td><td>ID do médico (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_procedimento</code></td><td>int</td><td>ID do procedimento (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>id_sala</code></td><td>int</td><td>ID da sala (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>peso_paciente</code></td><td>Decimal (opcional)</td><td>Peso do paciente em kg (Opcional)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -769,8 +767,10 @@ self.session = SQLiteSession(
 
                     <h5>Parâmetros (FallbackParams):</h5>
                     <table class="params-table">
-                        <tr><td><code>reason</code></td><td>string</td><td>Motivo da transferência</td></tr>
-                        <tr><td><code>summary</code></td><td>string</td><td>Resumo da conversa (opcional)</td></tr>
+                        <tr><td><code>reason</code></td><td>str</td><td>Motivo da transferência (OBRIGATÓRIO)</td></tr>
+                        <tr><td><code>summary</code></td><td>str (opcional)</td><td>Resumo da conversa</td></tr>
+                        <tr><td><code>patient_name</code></td><td>str (opcional)</td><td>Nome do paciente</td></tr>
+                        <tr><td><code>patient_whatsapp</code></td><td>str (opcional)</td><td>WhatsApp do paciente</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -814,7 +814,7 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros:</h5>
                     <table class="params-table">
-                        <tr><td><code>id_unidade</code></td><td>string</td><td>ID da unidade (obrigatório)</td></tr>
+                        <tr><td><code>id_unidade</code></td><td>int</td><td>ID da unidade (OBRIGATÓRIO)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -843,7 +843,7 @@ self.session = SQLiteSession(
                     
                     <h5>Parâmetros:</h5>
                     <table class="params-table">
-                        <tr><td><code>id_sala</code></td><td>string</td><td>ID da sala (obrigatório)</td></tr>
+                        <tr><td><code>id_sala</code></td><td>int</td><td>ID da sala (OBRIGATÓRIO)</td></tr>
                     </table>
 
                     <div class="code-block">
@@ -992,7 +992,7 @@ python backend/scripts/tools/TEST_ALL_TOOLS.py</code></pre>
 ✨ TODOS OS TESTES PASSARAM COM SUCESSO!</code></pre>
                 </div>
 
-                <h4>3. Testar via Docker (Recomendado para Produção)</h4>
+                <h4>3. Testar via Docker (Recomendado )</h4>
                 <div class="code-block">
                     <div class="code-header">Terminal</div>
                     <pre><code class="bash"># Iniciar container
@@ -1002,18 +1002,7 @@ docker-compose up webhooks_medicsheduler
 docker-compose exec webhooks_medicsheduler python backend/scripts/tools/TEST_ALL_TOOLS.py</code></pre>
                 </div>
 
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <span><strong>Nota:</strong> Os scripts funcionam com ambiente MOCK (padrão, sem dependências externas) ou podem ser configurados para Sandbox/Production via <code>.env</code>.</span>
-                </div>
 
-                <h3>Documentação Técnica Completa</h3>
-                <p>Para documentação detalhada sobre como executar, parametrizar e configurar cada script, consulte:</p>
-                <ul>
-                    <li>📖 <code>backend/scripts/tools/README.md</code> - Guia completo de uso</li>
-                    <li>⚙️ <code>.env.example</code> - Configurações disponíveis</li>
-                    <li>🔧 <code>backend/app/services/connectors/netpacs_connector.py</code> - Implementação do connector</li>
-                </ul>
             </section>
 
             <!-- Guardrails -->
