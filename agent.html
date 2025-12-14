@@ -188,12 +188,23 @@
                 <h4>Ferramentas (Tools)</h4>
                 <ul>
                     <li><a href="#tool-getdate">GetCurrentDate</a></li>
+                    <li><a href="#tool-procedimentos">ListProcedimentos</a></li>
+                    <li><a href="#tool-filiais">ListFiliais</a></li>
                     <li><a href="#tool-convenios">ListConvenios</a></li>
                     <li><a href="#tool-planos">ListPlanosConvenio</a></li>
                     <li><a href="#tool-search">SearchSlots</a></li>
-                    <li><a href="#tool-scheduler">OpenSheduler</a></li>
+                    <li><a href="#tool-unidade">SearchUnidade</a></li>
+                    <li><a href="#tool-sala">SearchSala</a></li>
+                    <li><a href="#tool-scheduler">OpenBooking</a></li>
                     <li><a href="#tool-fallback">FallbackToHuman</a></li>
                     <li><a href="#tool-rag">RAG Context</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h4>Testes & Validação</h4>
+                <ul>
+                    <li><a href="#testing-scripts">Scripts de Teste</a></li>
+                    <li><a href="#updates-summary">Resumo de Atualizações</a></li>
                 </ul>
             </div>
             <div class="sidebar-section">
@@ -512,7 +523,12 @@ self.session = SQLiteSession(
             <section id="tool-getdate" class="doc-section">
                 <h2><i class="fas fa-tools"></i> Ferramentas do Agente</h2>
                 
-                <p>O agente possui <strong>7 ferramentas</strong> para interagir com o sistema:</p>
+                <p>O agente possui <strong>9 ferramentas</strong> para interagir com o sistema. Cada ferramenta é testável independentemente através de scripts standalone localizados em <code>backend/scripts/tools/</code>.</p>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-flask-vial"></i>
+                    <span><strong>Scripts de Teste:</strong> Todos os scripts estão disponíveis em <code>backend/scripts/tools/</code> e podem ser executados isoladamente ou via <code>TEST_ALL_TOOLS.py</code> para validação completa. Veja a seção "Scripts de Teste" para mais detalhes.</span>
+                </div>
 
                 <div class="tool-card">
                     <div class="tool-card-header">
@@ -541,6 +557,34 @@ self.session = SQLiteSession(
                 </div>
             </section>
 
+            <section id="tool-procedimentos" class="doc-section">
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <i class="fas fa-stethoscope"></i>
+                        <h4>ListProcedimentos</h4>
+                    </div>
+                    <p>Lista procedimentos médicos disponíveis (consultas, exames, cirurgias).</p>
+                    
+                    <h5>Parâmetros:</h5>
+                    <table class="params-table">
+                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Filtros de busca</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100)</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "total": 5,
+  "data": [
+    {"id_procedimento": 1, "nome": "Tomografia Crânio", "tipo": "EXAME", "price": 450.00, "duracao_procedimento": 30},
+    {"id_procedimento": 2, "nome": "Consulta Geral", "tipo": "CONSULTA", "price": 250.00, "duracao_procedimento": 20},
+    {"id_procedimento": 3, "nome": "Ressonância Magnética", "tipo": "EXAME", "price": 800.00, "duracao_procedimento": 45}
+  ]
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
             <section id="tool-convenios" class="doc-section">
                 <div class="tool-card">
                     <div class="tool-card-header">
@@ -563,6 +607,34 @@ self.session = SQLiteSession(
     {"id_convenio": 1, "id_filial": 1, "nome": "Particular", "ativo": true},
     {"id_convenio": 24, "id_filial": 1, "nome": "Unimed", "ativo": true},
     {"id_convenio": 28, "id_filial": 1, "nome": "Amil", "ativo": true}
+  ]
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tool-filiais" class="doc-section">
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <i class="fas fa-hospital"></i>
+                        <h4>ListFiliais</h4>
+                    </div>
+                    <p>Lista filiais/unidades de atendimento da rede de saúde disponíveis para agendamento.</p>
+                    
+                    <h5>Parâmetros:</h5>
+                    <table class="params-table">
+                        <tr><td><code>filters</code></td><td>dict (opcional)</td><td>Filtros por cidade ou região</td></tr>
+                        <tr><td><code>limit</code></td><td>int</td><td>Limite de resultados (padrão: 100)</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "total": 3,
+  "data": [
+    {"id_filial": 1, "nome": "Unidade Centro", "cidade": "São Paulo", "endereco": "Av. Paulista, 1000"},
+    {"id_filial": 2, "nome": "Unidade Zona Leste", "cidade": "São Paulo", "endereco": "Rua A, 500"},
+    {"id_filial": 3, "nome": "Unidade Campinas", "cidade": "Campinas", "endereco": "Av. B, 1500"}
   ]
 }</code></pre>
                     </div>
@@ -648,11 +720,11 @@ self.session = SQLiteSession(
                 <div class="tool-card">
                     <div class="tool-card-header">
                         <i class="fas fa-calendar-check"></i>
-                        <h4>OpenSheduler</h4>
+                        <h4>OpenBooking</h4>
                     </div>
-                    <p>Confirma o agendamento de uma consulta/exame no sistema NetAnimati.</p>
+                    <p>Confirma o agendamento de uma consulta/exame no sistema NetAnimati após paciente selecionar horário disponível.</p>
                     
-                    <h5>Parâmetros (ShedulerParams):</h5>
+                    <h5>Parâmetros (BookingParams):</h5>
                     <table class="params-table">
                         <tr><td><code>date</code></td><td>string</td><td>Data (YYYY/MM/DD)</td></tr>
                         <tr><td><code>time</code></td><td>string</td><td>Hora (HH:mm:ss)</td></tr>
@@ -730,6 +802,218 @@ self.session = SQLiteSession(
                         <span><strong>Importante:</strong> Esta ferramenta deve ser chamada PRIMEIRO em toda conversa para carregar regras e tom de voz da rede de saúde.</span>
                     </div>
                 </div>
+            </section>
+
+            <section id="tool-unidade" class="doc-section">
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>SearchUnidade</h4>
+                    </div>
+                    <p>Busca informações detalhadas de uma unidade/filial específica.</p>
+                    
+                    <h5>Parâmetros:</h5>
+                    <table class="params-table">
+                        <tr><td><code>id_unidade</code></td><td>string</td><td>ID da unidade (obrigatório)</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "data": {
+    "id_unidade": "1",
+    "nome": "Unidade Centro",
+    "endereco": "Av. Paulista, 1000",
+    "telefone": "(11) 3000-0000",
+    "email": "centro@hospital.com.br",
+    "horario_atendimento": "Seg-Sex: 08:00-20:00, Sab: 09:00-14:00"
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tool-sala" class="doc-section">
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <i class="fas fa-door-open"></i>
+                        <h4>SearchSala</h4>
+                    </div>
+                    <p>Busca informações detalhadas de uma sala/consultório específico.</p>
+                    
+                    <h5>Parâmetros:</h5>
+                    <table class="params-table">
+                        <tr><td><code>id_sala</code></td><td>string</td><td>ID da sala (obrigatório)</td></tr>
+                    </table>
+
+                    <div class="code-block">
+                        <pre><code class="json">{
+  "status": "success",
+  "data": {
+    "id_sala": "5",
+    "nome": "Sala Tomografia",
+    "id_unidade": "1",
+    "id_filial": "1",
+    "tipo_atendimento": "Diagnóstico por Imagem",
+    "equipamentos": ["Tomógrafo 128 canais", "Sala de controle"]
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scripts de Teste -->
+            <section id="testing-scripts" class="doc-section">
+                <h2><i class="fas fa-flask-vial"></i> Scripts de Teste</h2>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>✨ NOVO:</strong> 11 scripts de teste criados para validar cada ferramenta independentemente! Localizados em <code>backend/scripts/tools/</code></span>
+                </div>
+
+                <p>Todos os scripts de teste estão localizados em <code>backend/scripts/tools/</code> e podem ser executados de forma independente para validar cada ferramenta:</p>
+
+                <h3>Scripts Disponíveis</h3>
+                <table class="doc-table">
+                    <thead>
+                        <tr><th>Script</th><th>Ferramenta</th><th>Propósito</th><th>Localização</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GetCurrentDate.py</code></td>
+                            <td>GetCurrentDate</td>
+                            <td>Obter data/hora atual para cálculos</td>
+                            <td><code>backend/scripts/tools/GetCurrentDate.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ListProcedimentos.py</code></td>
+                            <td>ListProcedimentos</td>
+                            <td>Listar procedimentos médicos</td>
+                            <td><code>backend/scripts/tools/ListProcedimentos.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ListFiliais.py</code></td>
+                            <td>ListFiliais</td>
+                            <td>Listar unidades de atendimento</td>
+                            <td><code>backend/scripts/tools/ListFiliais.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ListConvenios.py</code></td>
+                            <td>ListConvenios</td>
+                            <td>Listar planos de saúde</td>
+                            <td><code>backend/scripts/tools/ListConvenios.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>ListPlanosConvenio.py</code></td>
+                            <td>ListPlanosConvenio</td>
+                            <td>Listar planos de um convênio</td>
+                            <td><code>backend/scripts/tools/ListPlanosConvenio.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>SearchSlots.py</code></td>
+                            <td>SearchSlots</td>
+                            <td>Buscar horários disponíveis</td>
+                            <td><code>backend/scripts/tools/SearchSlots.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>SearchUnidade.py</code></td>
+                            <td>SearchUnidade</td>
+                            <td>Buscar informações de unidade</td>
+                            <td><code>backend/scripts/tools/SearchUnidade.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>SearchSala.py</code></td>
+                            <td>SearchSala</td>
+                            <td>Buscar informações de sala</td>
+                            <td><code>backend/scripts/tools/SearchSala.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>OpenBooking.py</code></td>
+                            <td>OpenBooking</td>
+                            <td>Criar agendamento</td>
+                            <td><code>backend/scripts/tools/OpenBooking.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>FallbackToHuman.py</code></td>
+                            <td>FallbackToHuman</td>
+                            <td>Transferir para atendente</td>
+                            <td><code>backend/scripts/tools/FallbackToHuman.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>RetrieveDocumentationContext.py</code></td>
+                            <td>retrieve_documentation_context</td>
+                            <td>Buscar contexto via RAG</td>
+                            <td><code>backend/scripts/tools/RetrieveDocumentationContext.py</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>TEST_ALL_TOOLS.py</code></td>
+                            <td>Validação Completa</td>
+                            <td>Testar todas as 9 ferramentas sequencialmente</td>
+                            <td><code>backend/scripts/tools/TEST_ALL_TOOLS.py</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Como Usar</h3>
+                
+                <h4>1. Testar uma Ferramenta Específica</h4>
+                <div class="code-block">
+                    <div class="code-header">Terminal</div>
+                    <pre><code class="bash">cd WhatsAppMedicSheduler
+python backend/scripts/tools/ListProcedimentos.py</code></pre>
+                </div>
+
+                <h4>2. Validar Todas as Ferramentas (Recomendado)</h4>
+                <div class="code-block">
+                    <div class="code-header">Terminal</div>
+                    <pre><code class="bash">cd WhatsAppMedicSheduler
+python backend/scripts/tools/TEST_ALL_TOOLS.py</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">Output Esperado (100% de Sucesso)</div>
+                    <pre><code class="text">🧪 TESTE DE TODAS AS TOOLS
+[1/11] GetCurrentDate...              ✓ SUCESSO
+[2/11] ListProcedimentos...           ✓ SUCESSO
+[3/11] ListFiliais...                 ✓ SUCESSO
+[4/11] ListConvenios...               ✓ SUCESSO
+[5/11] ListPlanosConvenio...          ✓ SUCESSO
+[6/11] SearchSlots...                 ✓ SUCESSO
+[7/11] SearchUnidade...               ✓ SUCESSO
+[8/11] SearchSala...                  ✓ SUCESSO
+[9/11] FallbackToHuman...             ✓ SUCESSO
+[10/11] RetrieveDocumentation...      ✓ SUCESSO
+[11/11] OpenBooking...                ✓ SUCESSO
+
+✓ Testes aprovados: 11
+✗ Testes falhados: 0
+📈 Taxa de sucesso: 100.0%
+
+✨ TODOS OS TESTES PASSARAM COM SUCESSO!</code></pre>
+                </div>
+
+                <h4>3. Testar via Docker (Recomendado para Produção)</h4>
+                <div class="code-block">
+                    <div class="code-header">Terminal</div>
+                    <pre><code class="bash"># Iniciar container
+docker-compose up webhooks_medicsheduler
+
+# Em outro terminal, executar teste
+docker-compose exec webhooks_medicsheduler python backend/scripts/tools/TEST_ALL_TOOLS.py</code></pre>
+                </div>
+
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span><strong>Nota:</strong> Os scripts funcionam com ambiente MOCK (padrão, sem dependências externas) ou podem ser configurados para Sandbox/Production via <code>.env</code>.</span>
+                </div>
+
+                <h3>Documentação Técnica Completa</h3>
+                <p>Para documentação detalhada sobre como executar, parametrizar e configurar cada script, consulte:</p>
+                <ul>
+                    <li>📖 <code>backend/scripts/tools/README.md</code> - Guia completo de uso</li>
+                    <li>⚙️ <code>.env.example</code> - Configurações disponíveis</li>
+                    <li>🔧 <code>backend/app/services/connectors/netpacs_connector.py</code> - Implementação do connector</li>
+                </ul>
             </section>
 
             <!-- Guardrails -->
@@ -912,8 +1196,8 @@ class TokensInfo(BaseModel):
                 <div class="flow-step">
                     <div class="flow-step-number">5</div>
                     <div class="flow-step-content">
-                        <h4>OpenSheduler()</h4>
-                        <p>Confirmar agendamento imediatamente após paciente escolher horário.</p>
+                        <h4>OpenBooking()</h4>
+                        <p>Confirmar agendamento imediatamente após paciente escolher horário. Retorna protocolo de agendamento.</p>
                     </div>
                 </div>
 
